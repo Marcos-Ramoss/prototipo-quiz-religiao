@@ -11,7 +11,10 @@ public class CorsConfig implements WebMvcConfigurer {
     private final String[] allowedOrigins;
 
     public CorsConfig(@Value("${quiz.cors.allowed-origins:http://localhost:4200}") String allowedOrigins) {
-        this.allowedOrigins = allowedOrigins.split(",");
+        this.allowedOrigins = java.util.Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(origin -> !origin.isEmpty())
+                .toArray(String[]::new);
     }
 
     @Override

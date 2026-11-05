@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import {
   GenerateQuizPayload,
   QuizSession,
@@ -13,7 +14,7 @@ import {
 })
 export class QuizService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/quiz';
+  private readonly apiUrl = environment.apiUrl;
 
   generateQuiz(payload: GenerateQuizPayload): Observable<QuizSession> {
     return this.http.post<QuizSession>(`${this.apiUrl}/generate`, payload);
