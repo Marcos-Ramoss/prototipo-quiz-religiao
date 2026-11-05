@@ -1,48 +1,58 @@
-<section class="card config-card">
-  <div class="card-header">
-    <h2 class="card-title">Configure seu Quiz</h2>
-    <p class="card-subtitle">
-      Selecione uma tradição religiosa, defina o nível de desafio e a IA gerará um quiz inédito e verificado.
-    </p>
-  </div>
-
-  <div class="form-body">
-    <!-- 1. Seleção de Religião -->
-    <div class="form-group">
-      <label class="form-label">
-        <span class="label-number">1</span>
-        Selecione a Religião:
-      </label>
-      <div class="religion-grid">
-        @for (rel of religions; track rel.id) {
-          <button
-            type="button"
-            class="religion-btn"
-            [class.active]="religiaoSelecionada === rel.id"
-            (click)="selectReligion(rel.id)">
-            <span class="rel-icon">{{ rel.icon }}</span>
-            <div class="rel-info">
-              <span class="rel-name">{{ rel.name }}</span>
-              <span class="rel-desc">{{ rel.desc }}</span>
-            </div>
-          </button>
-        }
+<section class="config-card">
+  <!-- 01 Escolha uma tradição -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="step-pill">01</span>
+      <div>
+        <h2 class="section-title">Escolha uma tradição</h2>
+        <p class="section-subtitle">Qual universo de conhecimento você deseja explorar hoje?</p>
       </div>
     </div>
 
-    <!-- 2. Seleção de Dificuldade e Quantidade -->
-    <div class="form-row">
-      <!-- Dificuldade -->
-      <div class="form-group flex-1">
-        <label class="form-label">
-          <span class="label-number">2</span>
-          Dificuldade:
-        </label>
-        <div class="segmented-control">
+    <div class="religion-grid">
+      @for (rel of religions; track rel.id) {
+        <button
+          type="button"
+          class="religion-card"
+          [class.selected]="religiaoSelecionada === rel.id"
+          (click)="selectReligion(rel.id)">
+          
+          <div class="card-icon-box">
+            <span class="rel-symbol">{{ rel.icon }}</span>
+          </div>
+
+          @if (religiaoSelecionada === rel.id) {
+            <span class="check-badge">✓</span>
+          }
+
+          <div class="card-text">
+            <h3 class="rel-title">{{ rel.name }}</h3>
+            <p class="rel-desc">{{ rel.desc }}</p>
+          </div>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- 02 Personalize seu desafio -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="step-pill">02</span>
+      <div>
+        <h2 class="section-title">Personalize seu desafio</h2>
+        <p class="section-subtitle">Escolha o nível e o formato mais adequados para você.</p>
+      </div>
+    </div>
+
+    <div class="controls-grid">
+      <!-- Nível de dificuldade -->
+      <div class="control-box">
+        <label class="control-label">Nível de dificuldade</label>
+        <div class="capsule-group">
           @for (dif of difficulties; track dif) {
             <button
               type="button"
-              class="segment-btn"
+              class="capsule-btn"
               [class.active]="dificuldadeSelecionada === dif"
               (click)="selectDifficulty(dif)">
               {{ dif }}
@@ -51,85 +61,79 @@
         </div>
       </div>
 
-      <!-- Quantidade de Questões -->
-      <div class="form-group flex-1">
-        <label class="form-label">
-          <span class="label-number">3</span>
-          Quantidade de Questões:
-        </label>
-        <div class="segmented-control">
+      <!-- Quantidade de perguntas -->
+      <div class="control-box">
+        <label class="control-label">Quantidade de perguntas</label>
+        <div class="capsule-group">
           @for (qtd of quantities; track qtd) {
             <button
               type="button"
-              class="segment-btn"
+              class="capsule-btn"
               [class.active]="quantidadeSelecionada === qtd"
               (click)="selectQuantity(qtd)">
-              {{ qtd }} questões
+              {{ qtd }}
             </button>
           }
         </div>
       </div>
     </div>
 
-    <!-- 4. Tema Específico (Opcional) -->
-    <div class="form-group">
-      <div class="theme-label-row">
-        <label class="form-label">
-          <span class="label-number">4</span>
-          Tema Específico (Opcional):
-        </label>
-        <span class="optional-tag">Deixe vazio para conhecimentos gerais</span>
-      </div>
-
-      <div class="theme-input-wrapper">
+    <!-- Algum assunto específico? (opcional) -->
+    <div class="subject-box">
+      <label class="control-label">
+        Algum assunto específico? <span class="optional-text">(opcional)</span>
+      </label>
+      <div class="input-wrapper">
         <input
           type="text"
-          class="theme-input"
-          placeholder="Ex: Parábolas, Mandamentos, Filosofia, História..."
+          class="subject-input"
+          placeholder="Ex: História, textos sagrados, ensinamentos..."
           [(ngModel)]="temaInformado" />
         @if (temaInformado) {
           <button
             type="button"
-            class="theme-clear-btn"
+            class="clear-input-btn"
             (click)="clearTheme()"
-            title="Limpar tema">
-            ✕ Limpar
+            title="Limpar assunto">
+            ✕
           </button>
         }
       </div>
 
-      <!-- Sugestões de temas em carrossel horizontal (Mobile-First / UX Rule 12) -->
+      <!-- Explore temas populares -->
       @if (currentSuggestedThemes.length > 0) {
-        <div class="tags-carousel-container">
-          <span class="carousel-caption">Sugestões rápidas:</span>
-          <div class="tags-carousel overflow-x-auto scrollbar-hide">
+        <div class="popular-themes-area">
+          <span class="popular-themes-label">Explore temas populares</span>
+          <div class="popular-tags-list overflow-x-auto scrollbar-hide">
             @for (sug of currentSuggestedThemes; track sug) {
               <button
                 type="button"
-                class="tag-chip"
+                class="tag-pill"
                 [class.active]="temaInformado === sug"
                 (click)="selectTheme(sug)">
-                {{ sug }}
+                + {{ sug }}
               </button>
             }
           </div>
         </div>
       }
     </div>
+  </div>
 
-    <!-- Botão Principal de Ação -->
-    <div class="action-footer">
-      <button
-        type="button"
-        class="btn-primary btn-generate"
-        (click)="submitConfig()">
-        <span class="btn-icon">⚡</span>
-        Gerar Quiz com IA
-      </button>
-      <p class="generation-notice">
-        Perguntas geradas em tempo real com alternativas plausíveis, referências canônicas e explicações educativas.
-      </p>
+  <!-- Bottom Action Bar -->
+  <div class="bottom-action-bar">
+    <div class="summary-info">
+      <span class="summary-question">Tudo pronto para começar?</span>
+      <span class="summary-details">
+        {{ selectedReligionName }} · {{ quantidadeSelecionada }} perguntas · Nível {{ dificuldadeSelecionada.toLowerCase() }}
+      </span>
     </div>
+
+    <button
+      type="button"
+      class="start-quiz-btn"
+      (click)="submitConfig()">
+      Começar meu quiz →
+    </button>
   </div>
 </section>
-

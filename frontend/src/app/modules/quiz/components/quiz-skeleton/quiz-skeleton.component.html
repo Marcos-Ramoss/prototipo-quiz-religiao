@@ -1,26 +1,34 @@
-<section class="card loading-card">
-  <div class="loading-hero">
-    <div class="ai-orb pulse">
-      <span class="ai-orb-icon">✨</span>
+<section class="skeleton-card">
+  <div class="skeleton-hero">
+    <div class="ai-sparkle-orb pulse">
+      <svg class="orb-star-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
+      </svg>
     </div>
-    <h2 class="loading-title">Inteligência Artificial em Ação</h2>
-    <p class="loading-subtitle">{{ message }}</p>
+    <h2 class="skeleton-title">Inteligência Artificial em Ação</h2>
+    <p class="skeleton-subtitle">{{ message }}</p>
   </div>
 
-  <!-- Skeletons preservando layout e altura (Regra 12 de UX do alvaraes-moderna) -->
-  <div class="skeleton-preview">
-    <div class="skeleton skeleton-header"></div>
-    <div class="skeleton skeleton-question"></div>
-    <div class="skeleton-options">
-      <div class="skeleton skeleton-option"></div>
-      <div class="skeleton skeleton-option"></div>
-      <div class="skeleton skeleton-option"></div>
-      <div class="skeleton skeleton-option"></div>
+  <!-- Skeletons preservando layout e altura (UX Rule 12) -->
+  <div class="skeleton-preview-box">
+    <div class="skeleton-top-row">
+      <div class="skeleton skel-tag"></div>
+      <div class="skeleton skel-tag"></div>
+      <div class="skeleton skel-progress"></div>
     </div>
-    <div class="skeleton-footer">
-      <div class="skeleton skeleton-btn"></div>
-      <div class="skeleton skeleton-btn"></div>
+    <div class="skeleton skel-bar"></div>
+    <div class="skeleton skel-question"></div>
+    
+    <div class="skeleton-options-group">
+      <div class="skeleton skel-option"></div>
+      <div class="skeleton skel-option"></div>
+      <div class="skeleton skel-option"></div>
+      <div class="skeleton skel-option"></div>
+    </div>
+
+    <div class="skeleton-bottom-row">
+      <div class="skeleton skel-nav-btn"></div>
+      <div class="skeleton skel-nav-btn"></div>
     </div>
   </div>
 </section>
-

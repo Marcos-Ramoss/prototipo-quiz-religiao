@@ -1,41 +1,74 @@
-<div class="app-container">
-  <!-- Header Principal -->
-  <header class="app-header">
-    <div class="header-content">
-      <div class="logo-area">
-        <div class="logo-icon">✨</div>
-        <div>
-          <h1 class="logo-title">Quiz Religioso IA</h1>
-          <p class="logo-subtitle">Geração Automática de Questões Educativas por Inteligência Artificial</p>
-        </div>
+<div class="app-layout">
+  <!-- Top Navbar -->
+  <header class="app-navbar">
+    <div class="navbar-left" (click)="onRestartConfig()" role="button" tabindex="0" title="Voltar ao Início">
+      <div class="navbar-logo-badge">
+        <svg class="sparkle-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
+        </svg>
       </div>
-      <div class="header-badges">
-        <span class="provider-badge">
-          <span class="status-dot"></span>
-          Gemini AI Engine
-        </span>
+      <div class="navbar-titles">
+        <h1 class="navbar-brand">Quiz das Religiões</h1>
+        <p class="navbar-tagline">Conhecimento, cultura e tradições</p>
+      </div>
+    </div>
+
+    <div class="navbar-right">
+      <button type="button" class="nav-link-btn" (click)="onRestartConfig()">
+        Início
+      </button>
+      <div class="pace-pill">
+        <svg class="small-sparkle" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
+        </svg>
+        <span>Aprenda no seu ritmo</span>
       </div>
     </div>
   </header>
 
-  <main class="main-content">
-    <!-- Mensagem de Erro Global -->
-    @if (errorMessage) {
-      <div class="alert-box alert-error">
-        <div class="alert-icon">⚠️</div>
-        <div class="alert-text">{{ errorMessage }}</div>
-        <button class="alert-close" (click)="dismissError()" aria-label="Fechar alerta">✕</button>
+  <!-- Hero Banner (Apenas na tela de Configuração) -->
+  @if (viewState === 'config') {
+    <section class="hero-banner">
+      <div class="hero-content">
+        <span class="hero-kicker">UMA JORNADA PELO CONHECIMENTO</span>
+        <h2 class="hero-title">
+          Descubra. Aprenda.<br>
+          Desafie seu conhecimento.
+        </h2>
+        <p class="hero-description">
+          Explore diferentes tradições religiosas, teste o que você sabe e descubra novas perspectivas a cada pergunta.
+        </p>
       </div>
-    }
 
-    <!-- ==================== TELA 1: CONFIGURAÇÃO DO QUIZ ==================== -->
+      <div class="hero-badge-container">
+        <div class="glass-badge">
+          <svg class="glass-star-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L14.8 9.2L23 12L14.8 14.8L12 23L9.2 14.8L1 12L9.2 9.2L12 1Z"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Mensagem de Erro Global -->
+  @if (errorMessage) {
+    <div class="alert-box alert-error">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-text">{{ errorMessage }}</div>
+      <button class="alert-close" (click)="dismissError()" aria-label="Fechar alerta">✕</button>
+    </div>
+  }
+
+  <!-- Main Views Container -->
+  <main class="main-body">
+    <!-- ==================== TELA 1: CONFIGURAÇÃO ==================== -->
     @if (viewState === 'config') {
       <app-quiz-config
         (generate)="onGenerateQuiz($event)">
       </app-quiz-config>
     }
 
-    <!-- ==================== TELA 2: CARREGAMENTO COM SKELETON ==================== -->
+    <!-- ==================== TELA 2: SKELETON LOADING ==================== -->
     @if (viewState === 'loading' || viewState === 'submitting') {
       <app-quiz-skeleton
         [message]="loadingMessage">

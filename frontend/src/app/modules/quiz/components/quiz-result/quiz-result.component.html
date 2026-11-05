@@ -1,42 +1,42 @@
-<section class="card result-card">
+<section class="result-card">
   <!-- Hero de Desempenho -->
   <div class="result-hero">
     @let feedback = getScoreFeedback(result.aproveitamento);
-    <div class="result-badge" [ngClass]="feedback.badgeClass">
-      <span class="score-percent">{{ result.aproveitamento }}%</span>
-      <span class="score-label">Aproveitamento</span>
+    <div class="score-circle-badge" [ngClass]="feedback.badgeClass">
+      <span class="score-number">{{ result.aproveitamento }}%</span>
+      <span class="score-caption">Aproveitamento</span>
     </div>
-    <h2 class="result-title">{{ feedback.title }}</h2>
-    <p class="result-message">{{ feedback.message }}</p>
+    <h2 class="result-headline">{{ feedback.title }}</h2>
+    <p class="result-submessage">{{ feedback.message }}</p>
   </div>
 
   <!-- Estatísticas Rápidas -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-value">{{ result.totalQuestoes }}</span>
-      <span class="stat-label">Total de Questões</span>
+  <div class="result-stats-row">
+    <div class="stat-pill">
+      <span class="stat-num">{{ result.totalQuestoes }}</span>
+      <span class="stat-title">Total de Questões</span>
     </div>
-    <div class="stat-card stat-success">
-      <span class="stat-value">{{ result.acertos }}</span>
-      <span class="stat-label">Acertos</span>
+    <div class="stat-pill stat-correct">
+      <span class="stat-num">{{ result.acertos }}</span>
+      <span class="stat-title">Acertos</span>
     </div>
-    <div class="stat-card stat-error">
-      <span class="stat-value">{{ result.erros }}</span>
-      <span class="stat-label">Erros</span>
+    <div class="stat-pill stat-wrong">
+      <span class="stat-num">{{ result.erros }}</span>
+      <span class="stat-title">Erros</span>
     </div>
   </div>
 
-  <!-- Botões de Ação de Resultado -->
-  <div class="result-actions">
+  <!-- Botões de Ação -->
+  <div class="result-action-buttons">
     <button
       type="button"
-      class="btn-primary"
+      class="action-btn btn-retry"
       (click)="retry.emit()">
       🔄 Tentar Novamente com Este Tema
     </button>
     <button
       type="button"
-      class="btn-secondary"
+      class="action-btn btn-new-quiz"
       (click)="restart.emit()">
       ⚙️ Configurar Novo Quiz
     </button>
@@ -44,45 +44,47 @@
 
   <!-- Gabarito e Explicações Detalhadas -->
   <div class="review-section">
-    <h3 class="review-heading">Revisão Detalhada com Explicações</h3>
-    <p class="review-subheading">
-      Confira o gabarito oficial, a análise educativa e as referências históricas verificadas.
-    </p>
+    <div class="review-header">
+      <h3 class="review-title">Revisão Detalhada com Explicações</h3>
+      <p class="review-subtitle">
+        Confira o gabarito oficial, a análise educativa e as referências históricas verificadas.
+      </p>
+    </div>
 
-    <div class="review-list">
+    <div class="review-cards-list">
       @for (detalhe of result.detalhes; track detalhe.perguntaId; let idx = $index) {
         <div
-          class="review-item"
-          [class.item-correct]="detalhe.acertou"
-          [class.item-wrong]="!detalhe.acertou">
+          class="review-item-card"
+          [class.card-correct]="detalhe.acertou"
+          [class.card-wrong]="!detalhe.acertou">
           
-          <div class="review-item-header">
-            <span class="review-q-num">Questão {{ idx + 1 }}</span>
+          <div class="review-top-meta">
+            <span class="question-number-badge">Questão {{ idx + 1 }}</span>
             @if (detalhe.acertou) {
-              <span class="badge-status badge-success">✓ Correta</span>
+              <span class="status-chip chip-correct">✓ Correta</span>
             } @else {
-              <span class="badge-status badge-wrong">✕ Incorreta</span>
+              <span class="status-chip chip-wrong">✕ Incorreta</span>
             }
           </div>
 
           <h4 class="review-question-text">{{ detalhe.pergunta }}</h4>
 
-          <!-- Lista de Alternativas com Gabarito -->
-          <div class="review-alternatives">
+          <!-- Alternativas com Gabarito -->
+          <div class="review-alt-list">
             @for (alt of detalhe.alternativas; track alt.id) {
               <div
-                class="review-alt-card"
+                class="review-alt-item"
                 [class.is-correct]="alt.id === detalhe.respostaCorretaId"
                 [class.is-user-selected]="alt.id === detalhe.respostaSelecionadaId"
                 [class.is-user-error]="alt.id === detalhe.respostaSelecionadaId && !detalhe.acertou">
-                <span class="rev-alt-id">{{ alt.id }}</span>
-                <span class="rev-alt-text">{{ alt.texto }}</span>
+                <span class="rev-alt-code">{{ alt.id }}</span>
+                <span class="rev-alt-desc">{{ alt.texto }}</span>
                 
                 @if (alt.id === detalhe.respostaCorretaId) {
-                  <span class="rev-tag rev-tag-correct">Gabarito Oficial</span>
+                  <span class="rev-badge badge-gabarito">Gabarito Oficial</span>
                 }
                 @if (alt.id === detalhe.respostaSelecionadaId && !detalhe.acertou) {
-                  <span class="rev-tag rev-tag-wrong">Sua Escolha</span>
+                  <span class="rev-badge badge-error">Sua Escolha</span>
                 }
               </div>
             }
@@ -90,17 +92,16 @@
 
           <!-- Explicação Educativa da IA -->
           <div class="explanation-box">
-            <div class="explanation-header">
-              <span class="exp-icon">💡</span>
+            <div class="explanation-title-row">
+              <span class="bulb-icon">💡</span>
               <strong>Explicação Educativa:</strong>
             </div>
-            <p class="explanation-text">{{ detalhe.explicacao }}</p>
+            <p class="explanation-paragraph">{{ detalhe.explicacao }}</p>
 
             @if (detalhe.referencia) {
-              <div class="reference-row">
-                <span class="ref-icon">📖</span>
-                <span class="ref-label">Referência:</span>
-                <span class="ref-text">{{ detalhe.referencia }}</span>
+              <div class="reference-badge-row">
+                <span class="ref-book-icon">📖</span>
+                <span class="ref-text"><strong>Referência:</strong> {{ detalhe.referencia }}</span>
               </div>
             }
           </div>
@@ -108,15 +109,4 @@
       }
     </div>
   </div>
-
-  <!-- Rodapé do Resultado -->
-  <div class="result-footer-actions">
-    <button
-      type="button"
-      class="btn-primary"
-      (click)="restart.emit()">
-      Novo Quiz
-    </button>
-  </div>
 </section>
-

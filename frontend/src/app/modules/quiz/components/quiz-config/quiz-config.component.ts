@@ -13,38 +13,43 @@ import { GenerateQuizPayload, ReligionOption } from '../../models/quiz.models';
 export class QuizConfigComponent {
   @Output() generate = new EventEmitter<GenerateQuizPayload>();
 
-  religiaoSelecionada: string = 'Cristianismo';
+  religiaoSelecionada: string = 'Judaísmo';
   dificuldadeSelecionada: string = 'Médio';
-  quantidadeSelecionada: number = 5;
+  quantidadeSelecionada: number = 10;
   temaInformado: string = '';
 
   readonly religions: ReligionOption[] = [
-    { id: 'Cristianismo', name: 'Cristianismo', icon: '✝️', desc: 'Evangelhos, tradições apostólicas e história bíblica' },
-    { id: 'Islamismo', name: 'Islamismo', icon: '☪️', desc: 'Pilares da fé, Alcorão e civilização islâmica' },
-    { id: 'Budismo', name: 'Budismo', icon: '☸️', desc: 'Quatro Nobres Verdades, Caminho Óctuplo e compaixão' },
-    { id: 'Hinduísmo', name: 'Hinduísmo', icon: '🕉️', desc: 'Vedas, Bhagavad Gita, Dharma e transcendência' },
-    { id: 'Judaísmo', name: 'Judaísmo', icon: '✡️', desc: 'Torá, tradições proféticas e história hebraica' },
-    { id: 'Espiritismo', name: 'Espiritismo', icon: '🕊️', desc: 'Obras de Allan Kardec, ética e caridade' },
-    { id: 'Religiões de matriz africana', name: 'Religiões de matriz africana', icon: '🌊', desc: 'Candomblé, Umbanda, Orixás e ancestralidade' },
-    { id: 'Outras religiões', name: 'Outras tradições', icon: '✨', desc: 'Xintoísmo, Taoísmo, Zoroastrismo e filosofia comparada' }
+    { id: 'Cristianismo', name: 'Cristianismo', icon: '✝', desc: 'Evangelhos, história e tradições' },
+    { id: 'Islamismo', name: 'Islamismo', icon: '☪', desc: 'Alcorão, história e práticas' },
+    { id: 'Budismo', name: 'Budismo', icon: '☸', desc: 'Ensinamentos e filosofia' },
+    { id: 'Hinduísmo', name: 'Hinduísmo', icon: 'ॐ', desc: 'Textos, filosofias e práticas' },
+    { id: 'Judaísmo', name: 'Judaísmo', icon: '✡', desc: 'Torá, costumes e história' },
+    { id: 'Espiritismo', name: 'Espiritismo', icon: '✦', desc: 'Obras, filosofia e ensinamentos' },
+    { id: 'Religiões de matriz africana', name: 'Matriz africana', icon: '🌿', desc: 'Ancestralidade e diversidade' },
+    { id: 'Outras tradições', name: 'Outras tradições', icon: '✺', desc: 'Crenças e filosofias do mundo' }
   ];
 
   readonly difficulties: string[] = ['Fácil', 'Médio', 'Difícil'];
   readonly quantities: number[] = [5, 10, 15];
 
   readonly suggestedThemesMap: Record<string, string[]> = {
-    'Cristianismo': ['Parábolas de Jesus', 'História dos Primeiros Cristãos', 'Reforma e Tradições', 'Sermão da Montanha'],
-    'Islamismo': ['Os Cinco Pilares da Fé', 'A Revelação do Alcorão', 'Profetas no Islã', 'Ramadã e Tradições'],
-    'Budismo': ['As Quatro Nobres Verdades', 'O Nobre Caminho Óctuplo', 'Vida de Siddhartha Gautama', 'Conceito de Nirvana'],
-    'Hinduísmo': ['Ensinamentos do Bhagavad Gita', 'Dharma, Karma e Samsara', 'Principais Divindades e Simbolismo', 'Festivais Tradicionais'],
-    'Judaísmo': ['A Torá e os Dez Mandamentos', 'Grandes Festas e Rituais', 'Profetas e Reis de Israel', 'Tradição do Shabat'],
-    'Espiritismo': ['O Livro dos Espíritos', 'A Lei de Causa e Efeito', 'Fundamentos de Allan Kardec', 'Prática da Fraternidade'],
-    'Religiões de matriz africana': ['Orixás e Arquétipos da Natureza', 'Valores de Ancestralidade', 'Sincretismo Cultural e Histórico', 'Respeito à Terra e aos Elementos'],
-    'Outras religiões': ['Taoísmo e a Busca do Equilíbrio', 'Xintoísmo e Reverência aos Kamis', 'Zoroastrismo e a Batalha Moral', 'Mitologia Nórdica e Greco-Romana']
+    'Cristianismo': ['Parábolas de Jesus', 'Sermão da Montanha', 'História dos Apóstolos'],
+    'Islamismo': ['Os Cinco Pilares', 'Alcorão Sagrado', 'Profetas no Islã'],
+    'Budismo': ['Quatro Nobres Verdades', 'Caminho Óctuplo', 'Vida de Siddhartha'],
+    'Hinduísmo': ['Bhagavad Gita', 'Dharma e Karma', 'Divindades e Vedas'],
+    'Judaísmo': ['Torá', 'Festas judaicas', 'História de Israel'],
+    'Espiritismo': ['O Livro dos Espíritos', 'Allan Kardec', 'Causa e Efeito'],
+    'Religiões de matriz africana': ['Ancestralidade', 'Orixás e Natureza', 'Sincretismo Cultural'],
+    'Outras tradições': ['Taoísmo e Harmonia', 'Xintoísmo e Natureza', 'Filosofias Orientais']
   };
 
   get currentSuggestedThemes(): string[] {
     return this.suggestedThemesMap[this.religiaoSelecionada] || [];
+  }
+
+  get selectedReligionName(): string {
+    const found = this.religions.find(r => r.id === this.religiaoSelecionada);
+    return found ? found.name : this.religiaoSelecionada;
   }
 
   selectReligion(id: string): void {
@@ -76,4 +81,3 @@ export class QuizConfigComponent {
     });
   }
 }
-
