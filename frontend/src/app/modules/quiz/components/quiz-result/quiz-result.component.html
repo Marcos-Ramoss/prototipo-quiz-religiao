@@ -1,17 +1,54 @@
 <section class="result-card">
-  <!-- Hero de Desempenho -->
-  <div class="result-hero">
+  <!-- Cabeçalho Exclusivo para Impressão em PDF / Papel -->
+  <div class="print-header">
+    <div class="print-header-content">
+      <h1 class="print-doc-title">QUIZ DAS RELIGIÕES — SIMULADO EDUCATIVO & GABARITO</h1>
+      <p class="print-doc-subtitle">Relatório Oficial de Avaliação e Aprendizado Gerado por Inteligência Artificial</p>
+      
+      <div class="print-meta-grid">
+        <div class="print-meta-item">
+          <strong>Data de Emissão:</strong> {{ currentDate }}
+        </div>
+        <div class="print-meta-item">
+          <strong>Total de Questões:</strong> {{ result.totalQuestoes }}
+        </div>
+        <div class="print-meta-item">
+          <strong>Acertos:</strong> {{ result.acertos }} ({{ result.aproveitamento }}%)
+        </div>
+      </div>
+
+      <div class="print-student-line">
+        <strong>Nome do Aluno / Participante:</strong> ___________________________________________________________
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero de Desempenho Visual (Tela) -->
+  <div class="result-hero no-print">
     @let feedback = getScoreFeedback(result.aproveitamento);
+    @let medal = getMedal(result.aproveitamento);
+
+    <!-- Medalha Conquistada com Confetes -->
+    <div class="medal-card" [ngClass]="medal.cssClass" (click)="triggerCelebration()" title="Clique para celebrar novamente!">
+      <span class="medal-icon pulse">{{ medal.icon }}</span>
+      <div class="medal-texts">
+        <span class="medal-badge-title">{{ medal.label }}</span>
+        <span class="medal-badge-desc">{{ medal.description }}</span>
+      </div>
+    </div>
+
+    <!-- Indicador Circular de Aproveitamento -->
     <div class="score-circle-badge" [ngClass]="feedback.badgeClass">
       <span class="score-number">{{ result.aproveitamento }}%</span>
       <span class="score-caption">Aproveitamento</span>
     </div>
+
     <h2 class="result-headline">{{ feedback.title }}</h2>
     <p class="result-submessage">{{ feedback.message }}</p>
   </div>
 
   <!-- Estatísticas Rápidas -->
-  <div class="result-stats-row">
+  <div class="result-stats-row no-print">
     <div class="stat-pill">
       <span class="stat-num">{{ result.totalQuestoes }}</span>
       <span class="stat-title">Total de Questões</span>
@@ -27,12 +64,24 @@
   </div>
 
   <!-- Botões de Ação -->
-  <div class="result-action-buttons">
+  <div class="result-action-buttons no-print">
     <button
       type="button"
       class="action-btn btn-retry"
       (click)="retry.emit()">
-      🔄 Tentar Novamente com Este Tema
+      🔄 Tentar Novamente
+    </button>
+    <button
+      type="button"
+      class="action-btn btn-export-pdf"
+      (click)="exportToPdf()"
+      title="Gerar PDF ou Imprimir Simulado Educativo">
+      <svg class="pdf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 9V2h12v7"></path>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+        <rect x="6" y="14" width="12" height="8"></rect>
+      </svg>
+      <span>📄 Exportar Simulado / Gabarito em PDF</span>
     </button>
     <button
       type="button"
@@ -101,7 +150,7 @@
             @if (detalhe.referencia) {
               <div class="reference-badge-row">
                 <span class="ref-book-icon">📖</span>
-                <span class="ref-text"><strong>Referência:</strong> {{ detalhe.referencia }}</span>
+                <span class="ref-text"><strong>Referência Histórica / Canônica:</strong> {{ detalhe.referencia }}</span>
               </div>
             }
           </div>
