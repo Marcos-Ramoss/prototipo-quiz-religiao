@@ -1,0 +1,93 @@
+@if (currentQuestion) {
+  <section class="card quiz-card">
+    <!-- Top Bar do Quiz -->
+    <div class="quiz-topbar">
+      <div class="quiz-meta-tags">
+        <span class="meta-tag meta-religion">{{ session.religiao }}</span>
+        <span class="meta-tag meta-difficulty">{{ session.dificuldade }}</span>
+        @if (session.tema) {
+          <span class="meta-tag meta-theme">Tema: {{ session.tema }}</span>
+        }
+      </div>
+      <div class="quiz-progress-text">
+        Questão <strong>{{ currentQuestionIndex + 1 }}</strong> de <strong>{{ totalQuestions }}</strong>
+      </div>
+    </div>
+
+    <!-- Barra de Progresso Visual -->
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" [style.width.%]="progressPercentage"></div>
+    </div>
+
+    <!-- Pergunta Atual -->
+    <div class="question-container">
+      <h3 class="question-text">
+        {{ currentQuestion.pergunta }}
+      </h3>
+    </div>
+
+    <!-- Alternativas de Resposta -->
+    <div class="alternatives-grid">
+      @for (alt of currentQuestion.alternativas; track alt.id) {
+        <button
+          type="button"
+          class="alternative-card"
+          [class.selected]="isAlternativeSelected(alt.id)"
+          (click)="selectAlternative(alt.id)">
+          <div class="alt-letter">{{ alt.id }}</div>
+          <div class="alt-text">{{ alt.texto }}</div>
+          <div class="alt-radio">
+            @if (isAlternativeSelected(alt.id)) {
+              <span class="radio-checked">✓</span>
+            }
+          </div>
+        </button>
+      }
+    </div>
+
+    <!-- Navegação de Questões -->
+    <div class="quiz-navigation">
+      <button
+        type="button"
+        class="btn-secondary"
+        [disabled]="currentQuestionIndex === 0"
+        (click)="previousQuestion()">
+        ← Anterior
+      </button>
+
+      <!-- Indicador de Navegação Rápida entre Questões -->
+      <div class="question-pills">
+        @for (q of session.questoes; track q.id; let idx = $index) {
+          <button
+            type="button"
+            class="pill-btn"
+            [class.current]="idx === currentQuestionIndex"
+            [class.answered]="userAnswers[q.id]"
+            (click)="goToQuestion(idx)"
+            [title]="'Ir para questão ' + (idx + 1)">
+            {{ idx + 1 }}
+          </button>
+        }
+      </div>
+
+      @if (currentQuestionIndex < totalQuestions - 1) {
+        <button
+          type="button"
+          class="btn-primary"
+          [disabled]="!isCurrentQuestionAnswered"
+          (click)="nextQuestion()">
+          Próxima →
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="btn-primary btn-finish"
+          [disabled]="!isCurrentQuestionAnswered"
+          (click)="finish()">
+          Finalizar Quiz 🏁
+        </button>
+      }
+    </div>
+  </section>
+}
+

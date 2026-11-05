@@ -1,0 +1,62 @@
+<div class="app-container">
+  <!-- Header Principal -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="logo-area">
+        <div class="logo-icon">✨</div>
+        <div>
+          <h1 class="logo-title">Quiz Religioso IA</h1>
+          <p class="logo-subtitle">Geração Automática de Questões Educativas por Inteligência Artificial</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="provider-badge">
+          <span class="status-dot"></span>
+          Gemini AI Engine
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Mensagem de Erro Global -->
+    @if (errorMessage) {
+      <div class="alert-box alert-error">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-text">{{ errorMessage }}</div>
+        <button class="alert-close" (click)="dismissError()" aria-label="Fechar alerta">✕</button>
+      </div>
+    }
+
+    <!-- ==================== TELA 1: CONFIGURAÇÃO DO QUIZ ==================== -->
+    @if (viewState === 'config') {
+      <app-quiz-config
+        (generate)="onGenerateQuiz($event)">
+      </app-quiz-config>
+    }
+
+    <!-- ==================== TELA 2: CARREGAMENTO COM SKELETON ==================== -->
+    @if (viewState === 'loading' || viewState === 'submitting') {
+      <app-quiz-skeleton
+        [message]="loadingMessage">
+      </app-quiz-skeleton>
+    }
+
+    <!-- ==================== TELA 3: EXECUÇÃO DO QUIZ ==================== -->
+    @if (viewState === 'quiz' && quizSession) {
+      <app-quiz-runner
+        [session]="quizSession"
+        (submitQuiz)="onSubmitQuiz($event)">
+      </app-quiz-runner>
+    }
+
+    <!-- ==================== TELA 4: RESULTADOS DO QUIZ ==================== -->
+    @if (viewState === 'result' && quizResult) {
+      <app-quiz-result
+        [result]="quizResult"
+        (restart)="onRestartConfig()"
+        (retry)="onRetrySameConfig()">
+      </app-quiz-result>
+    }
+  </main>
+</div>

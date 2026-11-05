@@ -1,0 +1,135 @@
+<section class="card config-card">
+  <div class="card-header">
+    <h2 class="card-title">Configure seu Quiz</h2>
+    <p class="card-subtitle">
+      Selecione uma tradição religiosa, defina o nível de desafio e a IA gerará um quiz inédito e verificado.
+    </p>
+  </div>
+
+  <div class="form-body">
+    <!-- 1. Seleção de Religião -->
+    <div class="form-group">
+      <label class="form-label">
+        <span class="label-number">1</span>
+        Selecione a Religião:
+      </label>
+      <div class="religion-grid">
+        @for (rel of religions; track rel.id) {
+          <button
+            type="button"
+            class="religion-btn"
+            [class.active]="religiaoSelecionada === rel.id"
+            (click)="selectReligion(rel.id)">
+            <span class="rel-icon">{{ rel.icon }}</span>
+            <div class="rel-info">
+              <span class="rel-name">{{ rel.name }}</span>
+              <span class="rel-desc">{{ rel.desc }}</span>
+            </div>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- 2. Seleção de Dificuldade e Quantidade -->
+    <div class="form-row">
+      <!-- Dificuldade -->
+      <div class="form-group flex-1">
+        <label class="form-label">
+          <span class="label-number">2</span>
+          Dificuldade:
+        </label>
+        <div class="segmented-control">
+          @for (dif of difficulties; track dif) {
+            <button
+              type="button"
+              class="segment-btn"
+              [class.active]="dificuldadeSelecionada === dif"
+              (click)="selectDifficulty(dif)">
+              {{ dif }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Quantidade de Questões -->
+      <div class="form-group flex-1">
+        <label class="form-label">
+          <span class="label-number">3</span>
+          Quantidade de Questões:
+        </label>
+        <div class="segmented-control">
+          @for (qtd of quantities; track qtd) {
+            <button
+              type="button"
+              class="segment-btn"
+              [class.active]="quantidadeSelecionada === qtd"
+              (click)="selectQuantity(qtd)">
+              {{ qtd }} questões
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Tema Específico (Opcional) -->
+    <div class="form-group">
+      <div class="theme-label-row">
+        <label class="form-label">
+          <span class="label-number">4</span>
+          Tema Específico (Opcional):
+        </label>
+        <span class="optional-tag">Deixe vazio para conhecimentos gerais</span>
+      </div>
+
+      <div class="theme-input-wrapper">
+        <input
+          type="text"
+          class="theme-input"
+          placeholder="Ex: Parábolas, Mandamentos, Filosofia, História..."
+          [(ngModel)]="temaInformado" />
+        @if (temaInformado) {
+          <button
+            type="button"
+            class="theme-clear-btn"
+            (click)="clearTheme()"
+            title="Limpar tema">
+            ✕ Limpar
+          </button>
+        }
+      </div>
+
+      <!-- Sugestões de temas em carrossel horizontal (Mobile-First / UX Rule 12) -->
+      @if (currentSuggestedThemes.length > 0) {
+        <div class="tags-carousel-container">
+          <span class="carousel-caption">Sugestões rápidas:</span>
+          <div class="tags-carousel overflow-x-auto scrollbar-hide">
+            @for (sug of currentSuggestedThemes; track sug) {
+              <button
+                type="button"
+                class="tag-chip"
+                [class.active]="temaInformado === sug"
+                (click)="selectTheme(sug)">
+                {{ sug }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Botão Principal de Ação -->
+    <div class="action-footer">
+      <button
+        type="button"
+        class="btn-primary btn-generate"
+        (click)="submitConfig()">
+        <span class="btn-icon">⚡</span>
+        Gerar Quiz com IA
+      </button>
+      <p class="generation-notice">
+        Perguntas geradas em tempo real com alternativas plausíveis, referências canônicas e explicações educativas.
+      </p>
+    </div>
+  </div>
+</section>
+

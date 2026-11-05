@@ -1,0 +1,122 @@
+<section class="card result-card">
+  <!-- Hero de Desempenho -->
+  <div class="result-hero">
+    @let feedback = getScoreFeedback(result.aproveitamento);
+    <div class="result-badge" [ngClass]="feedback.badgeClass">
+      <span class="score-percent">{{ result.aproveitamento }}%</span>
+      <span class="score-label">Aproveitamento</span>
+    </div>
+    <h2 class="result-title">{{ feedback.title }}</h2>
+    <p class="result-message">{{ feedback.message }}</p>
+  </div>
+
+  <!-- Estatísticas Rápidas -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-value">{{ result.totalQuestoes }}</span>
+      <span class="stat-label">Total de Questões</span>
+    </div>
+    <div class="stat-card stat-success">
+      <span class="stat-value">{{ result.acertos }}</span>
+      <span class="stat-label">Acertos</span>
+    </div>
+    <div class="stat-card stat-error">
+      <span class="stat-value">{{ result.erros }}</span>
+      <span class="stat-label">Erros</span>
+    </div>
+  </div>
+
+  <!-- Botões de Ação de Resultado -->
+  <div class="result-actions">
+    <button
+      type="button"
+      class="btn-primary"
+      (click)="retry.emit()">
+      🔄 Tentar Novamente com Este Tema
+    </button>
+    <button
+      type="button"
+      class="btn-secondary"
+      (click)="restart.emit()">
+      ⚙️ Configurar Novo Quiz
+    </button>
+  </div>
+
+  <!-- Gabarito e Explicações Detalhadas -->
+  <div class="review-section">
+    <h3 class="review-heading">Revisão Detalhada com Explicações</h3>
+    <p class="review-subheading">
+      Confira o gabarito oficial, a análise educativa e as referências históricas verificadas.
+    </p>
+
+    <div class="review-list">
+      @for (detalhe of result.detalhes; track detalhe.perguntaId; let idx = $index) {
+        <div
+          class="review-item"
+          [class.item-correct]="detalhe.acertou"
+          [class.item-wrong]="!detalhe.acertou">
+          
+          <div class="review-item-header">
+            <span class="review-q-num">Questão {{ idx + 1 }}</span>
+            @if (detalhe.acertou) {
+              <span class="badge-status badge-success">✓ Correta</span>
+            } @else {
+              <span class="badge-status badge-wrong">✕ Incorreta</span>
+            }
+          </div>
+
+          <h4 class="review-question-text">{{ detalhe.pergunta }}</h4>
+
+          <!-- Lista de Alternativas com Gabarito -->
+          <div class="review-alternatives">
+            @for (alt of detalhe.alternativas; track alt.id) {
+              <div
+                class="review-alt-card"
+                [class.is-correct]="alt.id === detalhe.respostaCorretaId"
+                [class.is-user-selected]="alt.id === detalhe.respostaSelecionadaId"
+                [class.is-user-error]="alt.id === detalhe.respostaSelecionadaId && !detalhe.acertou">
+                <span class="rev-alt-id">{{ alt.id }}</span>
+                <span class="rev-alt-text">{{ alt.texto }}</span>
+                
+                @if (alt.id === detalhe.respostaCorretaId) {
+                  <span class="rev-tag rev-tag-correct">Gabarito Oficial</span>
+                }
+                @if (alt.id === detalhe.respostaSelecionadaId && !detalhe.acertou) {
+                  <span class="rev-tag rev-tag-wrong">Sua Escolha</span>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Explicação Educativa da IA -->
+          <div class="explanation-box">
+            <div class="explanation-header">
+              <span class="exp-icon">💡</span>
+              <strong>Explicação Educativa:</strong>
+            </div>
+            <p class="explanation-text">{{ detalhe.explicacao }}</p>
+
+            @if (detalhe.referencia) {
+              <div class="reference-row">
+                <span class="ref-icon">📖</span>
+                <span class="ref-label">Referência:</span>
+                <span class="ref-text">{{ detalhe.referencia }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Rodapé do Resultado -->
+  <div class="result-footer-actions">
+    <button
+      type="button"
+      class="btn-primary"
+      (click)="restart.emit()">
+      Novo Quiz
+    </button>
+  </div>
+</section>
+
