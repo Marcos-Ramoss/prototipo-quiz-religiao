@@ -65,6 +65,13 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse("INVALID_JSON_PAYLOAD", "O corpo da requisição contém um JSON inválido ou incompatível.", System.currentTimeMillis()));
     }
 
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFound(org.springframework.web.servlet.resource.NoResourceFoundException ex) {
+        log.warn("Recurso estático ou rota não encontrada: {}", ex.getResourcePath());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("RESOURCE_NOT_FOUND", "Recurso não encontrado: /" + ex.getResourcePath(), System.currentTimeMillis()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         log.error("Erro inesperado no servidor: {}", ex.getMessage(), ex);
