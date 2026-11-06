@@ -1,0 +1,277 @@
+{
+  "_aviso": "ATENÇÃO: Este catálogo de perguntas em JSON é utilizado EXCLUSIVAMENTE como contingência (fallback) em casos de timeout da rede ou indisponibilidade temporária (503/429) do Google Gemini. Em condições normais, 100% das perguntas são geradas dinamicamente via IA.",
+  "judaismo": [
+    {
+      "pergunta": "Qual é o nome da festa judaica que comemora a libertação dos judeus da opressão persa, conforme narrada no Livro de Ester?",
+      "alternativas": [
+        {"id": "A", "texto": "Chanucá"},
+        {"id": "B", "texto": "Purim"},
+        {"id": "C", "texto": "Sucot"},
+        {"id": "D", "texto": "Shavuot"}
+      ],
+      "respostaCorretaId": "B",
+      "explicacao": "Purim celebra a salvação do povo judeu relatada no Livro de Ester através da coragem de Ester e Mordechai.",
+      "referencia": "Livro de Ester (Megilat Ester), Tanakh"
+    },
+    {
+      "pergunta": "Como se denomina a vasta coleção de discussões rabínicas sobre a lei oral judaica, composta pela Mishná e pela Guemará?",
+      "alternativas": [
+        {"id": "A", "texto": "Talmude"},
+        {"id": "B", "texto": "Zohar"},
+        {"id": "C", "texto": "Torá"},
+        {"id": "D", "texto": "Hagadá"}
+      ],
+      "respostaCorretaId": "A",
+      "explicacao": "O Talmude é a obra central do judaísmo rabínico, compilando séculos de interpretação e aplicação das leis.",
+      "referencia": "Talmude Babilônico e Talmude de Jerusalém"
+    },
+    {
+      "pergunta": "Qual é o termo hebraico utilizado para designar a lei religiosa judaica derivada dos mandamentos da Torá escrita e oral?",
+      "alternativas": [
+        {"id": "A", "texto": "Mitzvá"},
+        {"id": "B", "texto": "Halachá"},
+        {"id": "C", "texto": "Midrash"},
+        {"id": "D", "texto": "Minian"}
+      ],
+      "respostaCorretaId": "B",
+      "explicacao": "Halachá significa literalmente 'o caminho' e engloba o corpo legislativo e normativo que rege a vida judaica.",
+      "referencia": "Código Shulchan Aruch"
+    },
+    {
+      "pergunta": "Durante o ritual de Pessach, o texto que guia a ordem do Seder e relata a saída dos hebreus do Egito chama-se:",
+      "alternativas": [
+        {"id": "A", "texto": "Sidur"},
+        {"id": "B", "texto": "Hagadá"},
+        {"id": "C", "texto": "Machzor"},
+        {"id": "D", "texto": "Tefilá"}
+      ],
+      "respostaCorretaId": "B",
+      "explicacao": "A Hagadá de Pessach é lida durante o Seder para recordar o Êxodo e a libertação da escravidão.",
+      "referencia": "Liturgia Tradicional de Pessach"
+    },
+    {
+      "pergunta": "Qual movimento místico e espiritual judaico surgiu no século XVIII na Europa Oriental sob a liderança do Baal Shem Tov?",
+      "alternativas": [
+        {"id": "A", "texto": "Judaísmo Reformista"},
+        {"id": "B", "texto": "Judaísmo Conservador"},
+        {"id": "C", "texto": "Judaísmo Hassídico"},
+        {"id": "D", "texto": "Caraísmo"}
+      ],
+      "respostaCorretaId": "C",
+      "explicacao": "O movimento hassídico enfatizou a proximidade com Deus, a alegria na oração e o misticismo acessível a todos.",
+      "referencia": "História do Movimento Hassídico"
+    },
+    {
+      "pergunta": "Qual é o dia mais sagrado do calendário judaico, dedicado ao jejum rigoroso, arrependimento e introspecção espiritual?",
+      "alternativas": [
+        {"id": "A", "texto": "Rosh Hashaná"},
+        {"id": "B", "texto": "Yom Kippur"},
+        {"id": "C", "texto": "Simchat Torá"},
+        {"id": "D", "texto": "Tu Bishvat"}
+      ],
+      "respostaCorretaId": "B",
+      "explicacao": "Yom Kippur é o Dia da Expiação, no qual os judeus buscam a reconciliação e o perdão perante o Criador.",
+      "referencia": "Levítico 16 e 23"
+    },
+    {
+      "pergunta": "Qual é a cerimônia de maturidade religiosa que marca a transição de um jovem aos 13 anos perante a comunidade judaica?",
+      "alternativas": [
+        {"id": "A", "texto": "Bar Mitzvá"},
+        {"id": "B", "texto": "Brit Milá"},
+        {"id": "C", "texto": "Chupá"},
+        {"id": "D", "texto": "Kaddish"}
+      ],
+      "respostaCorretaId": "A",
+      "explicacao": "Bar Mitzvá ('filho do mandamento') celebra a assunção de responsabilidades éticas e religiosas pelo jovem.",
+      "referencia": "Tradição Haláchica"
+    },
+    {
+      "pergunta": "O candelabro especial de nove braços aceso durante a celebração de Chanucá é historicamente conhecido como:",
+      "alternativas": [
+        {"id": "A", "texto": "Menorá tradicional"},
+        {"id": "B", "texto": "Chanukiá"},
+        {"id": "C", "texto": "Shofar"},
+        {"id": "D", "texto": "Mezuzá"}
+      ],
+      "respostaCorretaId": "B",
+      "explicacao": "A Chanukiá possui 8 hastes para cada noite da festa e um nono braço auxiliar chamado Shamash.",
+      "referencia": "Tratado Shabbat do Talmude"
+    },
+    {
+      "pergunta": "Qual filósofo e médico judaico medieval do século XII redigiu a obra 'Guia dos Perplexos' e o código 'Mishnê Torá'?",
+      "alternativas": [
+        {"id": "A", "texto": "Rashi"},
+        {"id": "B", "texto": "Maimônides (Rambam)"},
+        {"id": "C", "texto": "Yehuda Halevi"},
+        {"id": "D", "texto": "Spinoza"}
+      ],
+      "respostaCorretaId": "B",
+      "explicacao": "Maimônides (Moses ben Maimon) foi um dos maiores pensadores teológicos e filosóficos da história judaica.",
+      "referencia": "Guia dos Perplexos e Mishnê Torá"
+    },
+    {
+      "pergunta": "O rolo sagrado contendo os cinco primeiros livros da Bíblia hebraica, manuscrito sobre pergaminho, é chamado de:",
+      "alternativas": [
+        {"id": "A", "texto": "Sefer Torá"},
+        {"id": "B", "texto": "Tanakh completo"},
+        {"id": "C", "texto": "Midrash Rabá"},
+        {"id": "D", "texto": "Nevim"}
+      ],
+      "respostaCorretaId": "A",
+      "explicacao": "O Sefer Torá é guardado na Arca Sagrada (Aron Hakodesh) da sinagoga e lido semanalmente nas congregações.",
+      "referencia": "Mandamentos do Pentateuco"
+    }
+  ],
+  "cristianismo": [
+    {
+      "pergunta": "Na Parábola do Filho Pródigo (Lucas 15), qual é a atitude do pai ao avistar o filho mais jovem retornando arrependido?",
+      "alternativas": [
+        {"id": "A", "texto": "Exige pagamento das dívidas antes de recebê-lo"},
+        {"id": "B", "texto": "Corre ao seu encontro, abraça-o e faz uma grande festa"},
+        {"id": "C", "texto": "Condena-o ao trabalho servil como punição"},
+        {"id": "D", "texto": "Desconhece sua filiação perante os servos"}
+      ],
+      "respostaCorretaId": "B",
+      "explicacao": "A parábola retrata o amor compassivo e a misericórdia incondicional de Deus que acolhe quem retorna.",
+      "referencia": "Evangelho segundo Lucas 15:11-32"
+    },
+    {
+      "pergunta": "Qual concílio ecumênico realizado em 325 d.C. definiu a consubstancialidade entre o Pai e o Filho no Credo cristão?",
+      "alternativas": [
+        {"id": "A", "texto": "Concílio de Trento"},
+        {"id": "B", "texto": "Concílio de Niceia I"},
+        {"id": "C", "texto": "Concílio de Calcedônia"},
+        {"id": "D", "texto": "Concílio de Éfeso"}
+      ],
+      "respostaCorretaId": "B",
+      "explicacao": "O Primeiro Concílio de Niceia estabeleceu o Credo Niceno, combatendo o arianismo e afirmando a divindade de Cristo.",
+      "referencia": "Atas Históricas do Concílio de Niceia"
+    },
+    {
+      "pergunta": "Na Parábola do Bom Samaritano (Lucas 10), qual é o principal ensinamento de Jesus sobre o 'amor ao próximo'?",
+      "alternativas": [
+        {"id": "A", "texto": "O próximo limita-se aos membros da própria comunidade religiosa"},
+        {"id": "B", "texto": "A compaixão e o socorro ativo transcendem qualquer barreira étnica ou social"},
+        {"id": "C", "texto": "Apenas as autoridades religiosas podem realizar obras de caridade"},
+        {"id": "D", "texto": "O isolamento social protege a pureza ritual"}
+      ],
+      "respostaCorretaId": "B",
+      "explicacao": "Jesus ensina que o verdadeiro próximo é aquele que manifesta misericórdia prática, independentemente de divisões históricas.",
+      "referencia": "Evangelho segundo Lucas 10:25-37"
+    },
+    {
+      "pergunta": "Em qual discurso fundamental Jesus proclamou as Bem-Aventuranças, registradas nos capítulos 5 a 7 de Mateus?",
+      "alternativas": [
+        {"id": "A", "texto": "Sermão da Montanha"},
+        {"id": "B", "texto": "Discurso no Cenáculo"},
+        {"id": "C", "texto": "Pregação em Cesareia"},
+        {"id": "D", "texto": "Discurso no Areópago"}
+      ],
+      "respostaCorretaId": "A",
+      "explicacao": "O Sermão da Montanha sintetiza a ética cristã do Reino de Deus, destacando a mansidão, justiça e misericórdia.",
+      "referencia": "Evangelho segundo Mateus 5-7"
+    },
+    {
+      "pergunta": "Qual apóstolo desempenhou papel crucial na expansão do cristianismo primitivo entre os povos gentios no mundo greco-romano?",
+      "alternativas": [
+        {"id": "A", "texto": "Apóstolo Paulo"},
+        {"id": "B", "texto": "Apóstolo Tomé"},
+        {"id": "C", "texto": "Apóstolo André"},
+        {"id": "D", "texto": "Apóstolo Tiago Maior"}
+      ],
+      "respostaCorretaId": "A",
+      "explicacao": "Paulo de Tarso realizou diversas viagens missionárias e redigiu grande parte das epístolas do Novo Testamento.",
+      "referencia": "Atos dos Apóstolos e Epístolas Paulinas"
+    }
+  ],
+  "islamismo": [
+    {
+      "pergunta": "Qual dos Cinco Pilares do Islã consiste na declaração formal de fé na unicidade de Deus e na profecia de Maomé?",
+      "alternativas": [
+        {"id": "A", "texto": "Salat"},
+        {"id": "B", "texto": "Shahada"},
+        {"id": "C", "texto": "Zakat"},
+        {"id": "D", "texto": "Hajj"}
+      ],
+      "respostaCorretaId": "B",
+      "explicacao": "A Shahada é a profissão de fé: 'Não há divindade além de Deus e Maomé é Seu mensageiro.'",
+      "referencia": "Alcorão e Hadith"
+    },
+    {
+      "pergunta": "A viagem histórica e migração dos primeiros muçulmanos de Meca para Medina em 622 d.C. é conhecida como:",
+      "alternativas": [
+        {"id": "A", "texto": "Hégira"},
+        {"id": "B", "texto": "Isra"},
+        {"id": "C", "texto": "Miraj"},
+        {"id": "D", "texto": "Jihad"}
+      ],
+      "respostaCorretaId": "A",
+      "explicacao": "A Hégira marca o início do calendário lunar islâmico e a fundação da primeira comunidade organizada em Medina.",
+      "referencia": "História Islâmica Clássica"
+    },
+    {
+      "pergunta": "Durante qual mês do calendário islâmico os muçulmanos praticam o jejum diurno obrigatório (Sawm)?",
+      "alternativas": [
+        {"id": "A", "texto": "Muharram"},
+        {"id": "B", "texto": "Ramadã"},
+        {"id": "C", "texto": "Shawwal"},
+        {"id": "D", "texto": "Dhu al-Hijjah"}
+      ],
+      "respostaCorretaId": "B",
+      "explicacao": "O Ramadã é sagrado porque foi o mês em que os primeiros versículos do Alcorão foram revelados.",
+      "referencia": "Alcorão 2:185"
+    }
+  ],
+  "budismo": [
+    {
+      "pergunta": "Qual é a Primeira Nobre Verdade ensinada pelo Buda histórico em seu primeiro sermão em Sarnath?",
+      "alternativas": [
+        {"id": "A", "texto": "A verdade do sofrimento e insatisfação (Dukkha)"},
+        {"id": "B", "texto": "A verdade da existência eterna do ego"},
+        {"id": "C", "texto": "A proibição de qualquer meditação"},
+        {"id": "D", "texto": "A busca exclusiva de bens materiais"}
+      ],
+      "respostaCorretaId": "A",
+      "explicacao": "Dukkha aponta para a natureza transitória e insatisfatória da existência condicionada.",
+      "referencia": "Dhammacakkappavattana Sutta"
+    },
+    {
+      "pergunta": "O conceito budista que ensina a ausência de um 'eu' permanente, autônomo e imutável é denominado:",
+      "alternativas": [
+        {"id": "A", "texto": "Anatta (ou Anatman)"},
+        {"id": "B", "texto": "Anicca"},
+        {"id": "C", "texto": "Nirvana"},
+        {"id": "D", "texto": "Bodhicitta"}
+      ],
+      "respostaCorretaId": "A",
+      "explicacao": "Anatta é um dos pilares budistas, demonstrando que todos os fenômenos são interdependentes e vazios de essência rígida.",
+      "referencia": "Textos do Cânone Páli"
+    }
+  ],
+  "padrao": [
+    {
+      "pergunta": "Em estudos de religião comparada, qual é o conceito que define a crença em uma única divindade soberana criadora?",
+      "alternativas": [
+        {"id": "A", "texto": "Politeísmo"},
+        {"id": "B", "texto": "Monoteísmo"},
+        {"id": "C", "texto": "Panteísmo"},
+        {"id": "D", "texto": "Animismo"}
+      ],
+      "respostaCorretaId": "B",
+      "explicacao": "O monoteísmo é a concepção teológica de que há apenas um único Deus supremo.",
+      "referencia": "Sociologia e História das Religiões"
+    },
+    {
+      "pergunta": "No pensamento filosófico e espiritual chinês clássico, o princípio de equilíbrio e complementaridade cósmica é representado por:",
+      "alternativas": [
+        {"id": "A", "texto": "Yin e Yang"},
+        {"id": "B", "texto": "Dharma"},
+        {"id": "C", "texto": "Ahura"},
+        {"id": "D", "texto": "Karma"}
+      ],
+      "respostaCorretaId": "A",
+      "explicacao": "Yin e Yang simbolizam as duas forças opostas e complementares que sustentam a harmonia do universo.",
+      "referencia": "Tao Te Ching e I Ching"
+    }
+  ]
+}

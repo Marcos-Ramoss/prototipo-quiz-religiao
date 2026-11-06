@@ -36,6 +36,7 @@ public class GeminiAiQuestionGenerator implements AiQuestionGenerator {
     private final int timeoutSeconds;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
+    private final Map<String, List<QuestionEntity>> contingencyCatalog;
 
     public GeminiAiQuestionGenerator(
             @Value("${quiz.ai.gemini.api-key:}") String apiKey,
@@ -55,6 +56,8 @@ public class GeminiAiQuestionGenerator implements AiQuestionGenerator {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
+
+        this.contingencyCatalog = loadContingencyCatalog();
     }
 
     @Override
@@ -409,124 +412,72 @@ public class GeminiAiQuestionGenerator implements AiQuestionGenerator {
         return result;
     }
 
+    /**
+     * ATENÇÃO / DOCUMENTAÇÃO ARQUITETURAL:
+     * O arquivo 'contingency-questions.json' é um mecanismo de DEGRADAÇÃO GRACIOSA (fallback/airbag).
+     * Ele é utilizado EXCLUSIVAMENTE em casos de timeout de rede (> 45s), picos de erro 503/429
+     * nos servidores do Google Gemini, ou ausência de chave em testes locais.
+     * Em condições normais de operação, 100% das perguntas são geradas dinamicamente pela IA.
+     */
+    private Map<String, List<QuestionEntity>> loadContingencyCatalog() {
+        Map<String, List<QuestionEntity>> catalog = new HashMap<>();
+        try (java.io.InputStream is = getClass().getResourceAsStream("/contingency-questions.json")) {
+            if (is != null) {
+                JsonNode root = this.objectMapper.readTree(is);
+                root.fields().forEachRemaining(entry -> {
+                    if (!entry.getKey().startsWith("_") && entry.getValue().isArray()) {
+                        try {
+                            List<QuestionEntity> questions = this.objectMapper.readerFor(new TypeReference<List<QuestionEntity>>() {})
+                                    .readValue(entry.getValue());
+                            catalog.put(entry.getKey(), questions);
+                        } catch (Exception ex) {
+                            log.warn("Erro ao carregar contingência para '{}': {}", entry.getKey(), ex.getMessage());
+                        }
+                    }
+                });
+                log.info("Catálogo de contingência carregado de 'contingency-questions.json' ({} temas).", catalog.size());
+            } else {
+                log.warn("Arquivo 'contingency-questions.json' não encontrado no classpath.");
+            }
+        } catch (Exception e) {
+            log.error("Falha ao inicializar catálogo de contingência: {}", e.getMessage(), e);
+        }
+        return Collections.unmodifiableMap(catalog);
+    }
+
+    /**
+     * ATENÇÃO: Este método só é acionado se a API do Google Gemini sofrer timeout
+     * ou falhar por instabilidade temporária dos servidores do Google.
+     * Em condições normais, 100% das perguntas são geradas dinamicamente pela IA.
+     */
     private List<QuestionEntity> getCuratedQuestionPool(String religiao, String dificuldade) {
-        String lower = religiao != null ? religiao.toLowerCase() : "";
-        List<QuestionEntity> list = new ArrayList<>();
+        String key = resolveContingencyKey(religiao);
+        List<QuestionEntity> pool = contingencyCatalog.getOrDefault(key, contingencyCatalog.get("padrao"));
 
-        if (lower.contains("jud")) {
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Qual é o nome da festa judaica que comemora a libertação dos judeus da opressão persa, conforme narrada no Livro de Ester?",
-                    List.of(new AlternativeEntity("A", "Chanucá"), new AlternativeEntity("B", "Purim"), new AlternativeEntity("C", "Sucot"), new AlternativeEntity("D", "Shavuot")),
-                    "B", "Purim celebra a salvação do povo judeu relatada no Livro de Ester através da coragem de Ester e Mordechai.", "Livro de Ester (Megilat Ester), Tanakh", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Como se denomina a vasta coleção de discussões rabínicas sobre a lei oral judaica, composta pela Mishná e pela Guemará?",
-                    List.of(new AlternativeEntity("A", "Talmude"), new AlternativeEntity("B", "Zohar"), new AlternativeEntity("C", "Torá"), new AlternativeEntity("D", "Hagadá")),
-                    "A", "O Talmude é a obra central do judaísmo rabínico, compilando séculos de interpretação e aplicação das leis.", "Talmude Babilônico e Talmude de Jerusalém", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Qual é o termo hebraico utilizado para designar a lei religiosa judaica derivada dos mandamentos da Torá escrita e oral?",
-                    List.of(new AlternativeEntity("A", "Mitzvá"), new AlternativeEntity("B", "Halachá"), new AlternativeEntity("C", "Midrash"), new AlternativeEntity("D", "Minian")),
-                    "B", "Halachá significa literalmente 'o caminho' e engloba o corpo legislativo e normativo que rege a vida judaica.", "Código Shulchan Aruch", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Durante o ritual de Pessach, o texto que guia a ordem do Seder e relata a saída dos hebreus do Egito chama-se:",
-                    List.of(new AlternativeEntity("A", "Sidur"), new AlternativeEntity("B", "Hagadá"), new AlternativeEntity("C", "Machzor"), new AlternativeEntity("D", "Tefilá")),
-                    "B", "A Hagadá de Pessach é lida durante o Seder para recordar o Êxodo e a libertação da escravidão.", "Liturgia Tradicional de Pessach", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Qual movimento místico e espiritual judaico surgiu no século XVIII na Europa Oriental sob a liderança do Baal Shem Tov?",
-                    List.of(new AlternativeEntity("A", "Judaísmo Reformista"), new AlternativeEntity("B", "Judaísmo Conservador"), new AlternativeEntity("C", "Judaísmo Hassídico"), new AlternativeEntity("D", "Caraísmo")),
-                    "C", "O movimento hassídico enfatizou a proximidade com Deus, a alegria na oração e o misticismo acessível a todos.", "História do Movimento Hassídico", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Qual é o dia mais sagrado do calendário judaico, dedicado ao jejum rigoroso, arrependimento e introspecção espiritual?",
-                    List.of(new AlternativeEntity("A", "Rosh Hashaná"), new AlternativeEntity("B", "Yom Kippur"), new AlternativeEntity("C", "Simchat Torá"), new AlternativeEntity("D", "Tu Bishvat")),
-                    "B", "Yom Kippur é o Dia da Expiação, no qual os judeus buscam a reconciliação e o perdão perante o Criador.", "Levítico 16 e 23", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Qual é a cerimônia de maturidade religiosa que marca a transição de um jovem aos 13 anos perante a comunidade judaica?",
-                    List.of(new AlternativeEntity("A", "Bar Mitzvá"), new AlternativeEntity("B", "Brit Milá"), new AlternativeEntity("C", "Chupá"), new AlternativeEntity("D", "Kaddish")),
-                    "A", "Bar Mitzvá ('filho do mandamento') celebra a assunção de responsabilidades éticas e religiosas pelo jovem.", "Tradição Haláchica", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "O candelabro especial de nove braços aceso durante a celebração de Chanucá é historicamente conhecido como:",
-                    List.of(new AlternativeEntity("A", "Menorá tradicional"), new AlternativeEntity("B", "Chanukiá"), new AlternativeEntity("C", "Shofar"), new AlternativeEntity("D", "Mezuzá")),
-                    "B", "A Chanukiá possui 8 hastes para cada noite da festa e um nono braço auxiliar chamado Shamash.", "Tratado Shabbat do Talmude", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Qual filósofo e médico judaico medieval do século XII redigiu a obra 'Guia dos Perplexos' e o código 'Mishnê Torá'?",
-                    List.of(new AlternativeEntity("A", "Rashi"), new AlternativeEntity("B", "Maimônides (Rambam)"), new AlternativeEntity("C", "Yehuda Halevi"), new AlternativeEntity("D", "Spinoza")),
-                    "B", "Maimônides (Moses ben Maimon) foi um dos maiores pensadores teológicos e filosóficos da história judaica.", "Guia dos Perplexos e Mishnê Torá", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "O rolo sagrado contendo os cinco primeiros livros da Bíblia hebraica, manuscrito sobre pergaminho, é chamado de:",
-                    List.of(new AlternativeEntity("A", "Sefer Torá"), new AlternativeEntity("B", "Tanakh completo"), new AlternativeEntity("C", "Midrash Rabá"), new AlternativeEntity("D", "Nevim")),
-                    "A", "O Sefer Torá é guardado na Arca Sagrada (Aron Hakodesh) da sinagoga e lido semanalmente nas congregações.", "Mandamentos do Pentateuco", dificuldade));
-        } else if (lower.contains("crist")) {
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Na Parábola do Filho Pródigo (Lucas 15), qual é a atitude do pai ao avistar o filho mais jovem retornando arrependido?",
-                    List.of(new AlternativeEntity("A", "Exige pagamento das dívidas antes de recebê-lo"), new AlternativeEntity("B", "Corre ao seu encontro, abraça-o e faz uma grande festa"), new AlternativeEntity("C", "Condena-o ao trabalho servil como punição"), new AlternativeEntity("D", "Desconhece sua filiação perante os servos")),
-                    "B", "A parábola retrata o amor compassivo e a misericórdia incondicional de Deus que acolhe quem retorna.", "Evangelho segundo Lucas 15:11-32", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Qual concílio ecumênico realizado em 325 d.C. definiu a consubstancialidade entre o Pai e o Filho no Credo cristão?",
-                    List.of(new AlternativeEntity("A", "Concílio de Trento"), new AlternativeEntity("B", "Concílio de Niceia I"), new AlternativeEntity("C", "Concílio de Calcedônia"), new AlternativeEntity("D", "Concílio de Éfeso")),
-                    "B", "O Primeiro Concílio de Niceia estabeleceu o Credo Niceno, combatendo o arianismo e afirmando a divindade de Cristo.", "Atas Históricas do Concílio de Niceia", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Na Parábola do Bom Samaritano (Lucas 10), qual é o principal ensinamento de Jesus sobre o 'amor ao próximo'?",
-                    List.of(new AlternativeEntity("A", "O próximo limita-se aos membros da própria comunidade religiosa"), new AlternativeEntity("B", "A compaixão e o socorro ativo transcendem qualquer barreira étnica ou social"), new AlternativeEntity("C", "Apenas as autoridades religiosas podem realizar obras de caridade"), new AlternativeEntity("D", "O isolamento social protege a pureza ritual")),
-                    "B", "Jesus ensina que o verdadeiro próximo é aquele que manifesta misericórdia prática, independentemente de divisões históricas.", "Evangelho segundo Lucas 10:25-37", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Em qual discurso fundamental Jesus proclamou as Bem-Aventuranças, registradas nos capítulos 5 a 7 de Mateus?",
-                    List.of(new AlternativeEntity("A", "Sermão da Montanha"), new AlternativeEntity("B", "Discurso no Cenáculo"), new AlternativeEntity("C", "Pregação em Cesareia"), new AlternativeEntity("D", "Discurso no Areópago")),
-                    "A", "O Sermão da Montanha sintetiza a ética cristã do Reino de Deus, destacando a mansidão, justiça e misericórdia.", "Evangelho segundo Mateus 5-7", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Qual apóstolo desempenhou papel crucial na expansão do cristianismo primitivo entre os povos gentios no mundo greco-romano?",
-                    List.of(new AlternativeEntity("A", "Apóstolo Paulo"), new AlternativeEntity("B", "Apóstolo Tomé"), new AlternativeEntity("C", "Apóstolo André"), new AlternativeEntity("D", "Apóstolo Tiago Maior")),
-                    "A", "Paulo de Tarso realizou diversas viagens missionárias e redigiu grande parte das epístolas do Novo Testamento.", "Atos dos Apóstolos e Epístolas Paulinas", dificuldade));
-        } else if (lower.contains("isl")) {
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Qual dos Cinco Pilares do Islã consiste na declaração formal de fé na unicidade de Deus e na profecia de Maomé?",
-                    List.of(new AlternativeEntity("A", "Salat"), new AlternativeEntity("B", "Shahada"), new AlternativeEntity("C", "Zakat"), new AlternativeEntity("D", "Hajj")),
-                    "B", "A Shahada é a profissão de fé: 'Não há divindade além de Deus e Maomé é Seu mensageiro.'", "Alcorão e Hadith", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "A viagem histórica e migração dos primeiros muçulmanos de Meca para Medina em 622 d.C. é conhecida como:",
-                    List.of(new AlternativeEntity("A", "Hégira"), new AlternativeEntity("B", "Isra"), new AlternativeEntity("C", "Miraj"), new AlternativeEntity("D", "Jihad")),
-                    "A", "A Hégira marca o início do calendário lunar islâmico e a fundação da primeira comunidade organizada em Medina.", "História Islâmica Clássica", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Durante qual mês do calendário islâmico os muçulmanos praticam o jejum diurno obrigatório (Sawm)?",
-                    List.of(new AlternativeEntity("A", "Muharram"), new AlternativeEntity("B", "Ramadã"), new AlternativeEntity("C", "Shawwal"), new AlternativeEntity("D", "Dhu al-Hijjah")),
-                    "B", "O Ramadã é sagrado porque foi o mês em que os primeiros versículos do Alcorão foram revelados.", "Alcorão 2:185", dificuldade));
-        } else if (lower.contains("bud")) {
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Qual é a Primeira Nobre Verdade ensinada pelo Buda histórico em seu primeiro sermão em Sarnath?",
-                    List.of(new AlternativeEntity("A", "A verdade do sofrimento e insatisfação (Dukkha)"), new AlternativeEntity("B", "A verdade da existência eterna do ego"), new AlternativeEntity("C", "A proibição de qualquer meditação"), new AlternativeEntity("D", "A busca exclusiva de bens materiais")),
-                    "A", "Dukkha aponta para a natureza transitória e insatisfatória da existência condicionada.", "Dhammacakkappavattana Sutta", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "O conceito budista que ensina a ausência de um 'eu' permanente, autônomo e imutável é denominado:",
-                    List.of(new AlternativeEntity("A", "Anatta (ou Anatman)"), new AlternativeEntity("B", "Anicca"), new AlternativeEntity("C", "Nirvana"), new AlternativeEntity("D", "Bodhicitta")),
-                    "A", "Anatta é um dos pilares budistas, demonstrando que todos os fenômenos são interdependentes e vazios de essência rígida.", "Textos do Cânone Páli", dificuldade));
-        } else {
-            // Pool ecumênico e de outras tradições
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "Em estudos de religião comparada, qual é o conceito que define a crença em uma única divindade soberana criadora?",
-                    List.of(new AlternativeEntity("A", "Politeísmo"), new AlternativeEntity("B", "Monoteísmo"), new AlternativeEntity("C", "Panteísmo"), new AlternativeEntity("D", "Animismo")),
-                    "B", "O monoteísmo é a concepção teológica de que há apenas um único Deus supremo.", "Sociologia e História das Religiões", dificuldade));
-
-            list.add(new QuestionEntity(UUID.randomUUID().toString(),
-                    "No pensamento filosófico e espiritual chinês clássico, o princípio de equilíbrio e complementaridade cósmica é representado por:",
-                    List.of(new AlternativeEntity("A", "Yin e Yang"), new AlternativeEntity("B", "Dharma"), new AlternativeEntity("C", "Ahura"), new AlternativeEntity("D", "Karma")),
-                    "A", "Yin e Yang simbolizam as duas forças opostas e complementares que sustentam a harmonia do universo.", "Tao Te Ching e I Ching", dificuldade));
+        if (pool == null || pool.isEmpty()) {
+            return new ArrayList<>();
         }
 
-        return list;
+        return pool.stream()
+                .map(q -> new QuestionEntity(
+                        UUID.randomUUID().toString(),
+                        q.getPergunta(),
+                        q.getAlternativas(),
+                        q.getRespostaCorretaId(),
+                        q.getExplicacao(),
+                        q.getReferencia(),
+                        dificuldade
+                ))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    private String resolveContingencyKey(String religiao) {
+        String lower = religiao != null ? religiao.toLowerCase() : "";
+        if (lower.contains("jud")) return "judaismo";
+        if (lower.contains("crist")) return "cristianismo";
+        if (lower.contains("isl")) return "islamismo";
+        if (lower.contains("bud")) return "budismo";
+        return "padrao";
     }
 
     private static class GeminiTransientException extends RuntimeException {
