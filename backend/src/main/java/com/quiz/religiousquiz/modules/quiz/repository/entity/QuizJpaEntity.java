@@ -21,6 +21,9 @@ public class QuizJpaEntity {
     @Column(name = "id", length = 64)
     private String id;
 
+    @Column(name = "titulo", length = 150)
+    private String titulo;
+
     @Column(name = "religiao", length = 100, nullable = false)
     private String religiao;
 
@@ -33,8 +36,11 @@ public class QuizJpaEntity {
     @Column(name = "quantidade", nullable = false)
     private int quantidade;
 
+    @Column(name = "tempo_limite_segundos", nullable = false)
+    private int tempoLimiteSegundos = 0;
+
     @Column(name = "status", length = 30, nullable = false)
-    private String status = "CRIADO";
+    private String status = "PUBLICADO";
 
     @Column(name = "criado_em", nullable = false)
     private Instant criadoEm;
@@ -50,12 +56,19 @@ public class QuizJpaEntity {
 
     public QuizJpaEntity(String id, String religiao, String tema, String dificuldade,
                          int quantidade, String status, Instant criadoEm, Instant expiraEm) {
+        this(id, "Quiz sobre " + (religiao != null ? religiao : "Tradições"), religiao, tema, dificuldade, quantidade, 0, status, criadoEm, expiraEm);
+    }
+
+    public QuizJpaEntity(String id, String titulo, String religiao, String tema, String dificuldade,
+                         int quantidade, int tempoLimiteSegundos, String status, Instant criadoEm, Instant expiraEm) {
         this.id = id;
+        this.titulo = (titulo != null && !titulo.isBlank()) ? titulo : "Quiz sobre " + (religiao != null ? religiao : "Tradições");
         this.religiao = religiao;
         this.tema = tema;
         this.dificuldade = dificuldade;
         this.quantidade = quantidade;
-        this.status = status != null ? status : "CRIADO";
+        this.tempoLimiteSegundos = Math.max(0, tempoLimiteSegundos);
+        this.status = status != null ? status : "PUBLICADO";
         this.criadoEm = criadoEm != null ? criadoEm : Instant.now();
         this.expiraEm = expiraEm;
     }
@@ -67,6 +80,12 @@ public class QuizJpaEntity {
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
+    public String getTitulo() { return titulo; }
+    public void setTitulo(String titulo) { this.titulo = titulo; }
+
+    public int getTempoLimiteSegundos() { return tempoLimiteSegundos; }
+    public void setTempoLimiteSegundos(int tempoLimiteSegundos) { this.tempoLimiteSegundos = tempoLimiteSegundos; }
 
     public String getReligiao() { return religiao; }
     public void setReligiao(String religiao) { this.religiao = religiao; }

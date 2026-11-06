@@ -9,8 +9,16 @@
           <span class="meta-tag meta-theme">{{ session.tema }}</span>
         }
       </div>
-      <div class="progress-pill">
-        Questão <strong>{{ currentQuestionIndex + 1 }}</strong> de <strong>{{ totalQuestions }}</strong>
+      <div class="topbar-right">
+        @if (tempoLimiteAtivo) {
+          <div class="timer-pill" [class.timer-warning]="tempoRestanteSegundos <= 60">
+            <span class="timer-icon">⏱️</span>
+            <span>Tempo: <strong>{{ tempoRestanteFormatado }}</strong></span>
+          </div>
+        }
+        <div class="progress-pill">
+          Questão <strong>{{ currentQuestionIndex + 1 }}</strong> de <strong>{{ totalQuestions }}</strong>
+        </div>
       </div>
     </div>
 

@@ -109,7 +109,7 @@
 
       <!-- TELA 1: CONFIGURAÇÃO DO QUIZ -->
       @if (viewState === 'config') {
-      <app-quiz-config (generate)="onGenerateQuiz($event)"></app-quiz-config>
+      <app-quiz-config (generate)="onGenerateQuiz($event)" (playQuiz)="aoJogarQuizExistente($event)"></app-quiz-config>
       }
 
       <!-- TELA 2: SKELETON LOADING -->

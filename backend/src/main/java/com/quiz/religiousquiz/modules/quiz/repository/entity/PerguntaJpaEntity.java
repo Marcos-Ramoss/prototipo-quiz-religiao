@@ -1,8 +1,9 @@
 package com.quiz.religiousquiz.modules.quiz.repository.entity;
 
 import com.quiz.religiousquiz.modules.quiz.domain.AlternativeEntity;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -31,8 +32,8 @@ public class PerguntaJpaEntity {
     @Column(name = "pergunta", nullable = false, columnDefinition = "TEXT")
     private String pergunta;
 
-    @Convert(converter = AlternativasJsonConverter.class)
-    @Column(name = "alternativas", nullable = false, columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "alternativas", nullable = false, columnDefinition = "jsonb")
     private List<AlternativeEntity> alternativas = new ArrayList<>();
 
     @Column(name = "resposta_correta_id", length = 10, nullable = false)

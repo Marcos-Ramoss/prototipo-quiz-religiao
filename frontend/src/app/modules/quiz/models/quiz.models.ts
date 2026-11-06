@@ -12,10 +12,30 @@ export interface PublicQuestion {
 
 export interface QuizSession {
   quizId: string;
+  titulo?: string;
   religiao: string;
   tema: string;
   dificuldade: string;
+  status?: string;
+  tempoLimiteSegundos?: number;
   questoes: PublicQuestion[];
+}
+
+export interface QuizSummary {
+  id: string;
+  titulo: string;
+  religiao: string;
+  tema: string;
+  dificuldade: string;
+  totalPerguntas: number;
+  tempoLimiteSegundos: number;
+  status: string;
+  criadoEm: string;
+}
+
+export interface PublishQuizPayload {
+  titulo?: string;
+  tempoLimiteSegundos?: number;
 }
 
 export interface GenerateQuizPayload {

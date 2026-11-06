@@ -48,16 +48,19 @@ public class GenerateQuizUseCase {
                 religiao, tema, dificuldade, quantidade
         );
 
-        QuizSession sessao = criarSessao(religiao, tema, dificuldade, questoes);
+        QuizSession sessao = criarSessao(requisicao, questoes);
         sessionRepository.salvar(sessao);
 
         List<PublicQuestionDto> questoesPublicas = mapearParaQuestoesPublicas(questoes);
 
         return new QuizSessionResponse(
                 sessao.getId(),
+                sessao.getTitulo(),
                 sessao.getReligiao(),
                 sessao.getTema(),
                 sessao.getDificuldade(),
+                sessao.getStatus(),
+                sessao.getTempoLimiteSegundos(),
                 questoesPublicas
         );
     }
@@ -78,16 +81,36 @@ public class GenerateQuizUseCase {
         }
     }
 
-    private QuizSession criarSessao(String religiao, String tema, String dificuldade, List<QuestionEntity> questoes) {
+    private QuizSession criarSessao(GenerateQuizRequest requisicao, List<QuestionEntity> questoes) {
         String sessionId = UUID.randomUUID().toString();
         Instant now = Instant.now();
-        Instant expiresAt = now.plus(sessionTtlMinutes, ChronoUnit.MINUTES);
+
+        String religiao = requisicao.religiao().trim();
+        String tema = requisicao.tema() != null ? requisicao.tema().trim() : "";
+        String dificuldade = requisicao.dificuldade().trim();
+
+        String titulo = (requisicao.titulo() != null && !requisicao.titulo().isBlank())
+                ? requisicao.titulo().trim()
+                : "Quiz: " + religiao + (!tema.isBlank() ? " - " + tema : "");
+
+        int tempoLimite = requisicao.tempoLimiteSegundos() != null ? Math.max(0, requisicao.tempoLimiteSegundos()) : 0;
+        String status = (requisicao.status() != null && !requisicao.status().isBlank())
+                ? requisicao.status().trim()
+                : "PUBLICADO";
+
+        // Quizzes do catálogo institucional são perenes (10 anos)
+        Instant expiresAt = "PUBLICADO".equalsIgnoreCase(status)
+                ? now.plus(3650, ChronoUnit.DAYS)
+                : now.plus(sessionTtlMinutes, ChronoUnit.MINUTES);
 
         return new QuizSession(
                 sessionId,
+                titulo,
                 religiao,
                 tema,
                 dificuldade,
+                status,
+                tempoLimite,
                 now,
                 expiresAt,
                 questoes
