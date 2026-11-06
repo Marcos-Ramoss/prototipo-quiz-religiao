@@ -1,47 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
 :root {
-  --primary: #4f39f6;
-  --primary-hover: #402ad8;
-  --primary-light: #f5f4ff;
-  --primary-border: #8172fc;
-  --primary-glow: rgba(79, 57, 246, 0.25);
-  
-  --secondary: #0ea5e9;
-  --secondary-light: #f0f9ff;
-  --accent: #f59e0b;
-  --accent-light: #fef3c7;
-  --success: #10b981;
-  --success-light: #ecfdf5;
-  --danger: #ef4444;
-  --danger-light: #fef2f2;
-  
-  --bg-main: #f5f6fa;
-  --surface: #ffffff;
-  --surface-subtle: #f8fafc;
-  --surface-muted: #f1f3f9;
-  --border: #e8ecf4;
-  --border-focus: #4f39f6;
-  
-  --text-main: #131728;
-  --text-navy: #151042;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
-  
-  --radius-xs: 6px;
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-  
-  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.04);
-  --shadow-sm: 0 2px 8px rgba(16, 24, 40, 0.05);
-  --shadow-md: 0 6px 18px rgba(16, 24, 40, 0.07);
-  --shadow-lg: 0 16px 36px rgba(16, 24, 40, 0.1);
-  --shadow-purple: 0 8px 24px rgba(79, 57, 246, 0.28);
-  
+  /* Cores Estruturais e Neutras - Design System Convivere */
+  --deep: #0b3034;       /* Verde Petróleo Nobre (marca, hero e botões primários) */
+  --ink: #143236;        /* Grafite profundo para textos de alto contraste */
+  --muted: #698084;      /* Cinza esverdeado para textos secundários e legendas */
+  --bg: #f6f8f7;         /* Off-white sereno para o fundo global da aplicação */
+  --white: #ffffff;      /* Branco puro para superfícies de cards e modais */
+  --line: #e4ebea;       /* Cinza suave para bordas sutis e divisórias */
+
+  /* Acentos de Ação e Destaque */
+  --green: #168c73;      /* Verde esmeralda de ação, ícones e links */
+  --green2: #25b392;     /* Verde menta para barras de progresso e gradientes */
+  --light: #edf7f3;      /* Fundo suave para tags ativas, chips e destaques */
+  --orange: #ef9b69;     /* Âmbar/laranja quente para call-to-actions de destaque e medalhas */
+
+  /* Sombras e Elevações */
+  --shadow: 0 12px 34px rgba(18, 55, 50, 0.065);
+  --shadow-sm: 0 4px 12px rgba(18, 55, 50, 0.04);
+  --shadow-lg: 0 18px 45px rgba(11, 48, 52, 0.12);
+
+  /* Transição suave */
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Cores Canônicas por Tradição Religiosa */
+  --rel-cristianismo: #376F8E;
+  --rel-islamismo: #238A83;
+  --rel-budismo: #BE8650;
+  --rel-hinduismo: #C77561;
+  --rel-judaismo: #667CB4;
+  --rel-africana: #A16B52;
+  --rel-sikhismo: #A17A2F;
+  --rel-espiritismo: #4B8F80;
 }
 
 * {
@@ -50,16 +38,38 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--bg-main);
-  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--ink);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
 
-/* Scrollbar hide utility for carousels */
+button, input, select, textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid #75d6bc;
+  outline-offset: 2px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Scrollbar hide utility para filtros horizontais mobile */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -68,25 +78,29 @@ body {
   display: none;
 }
 
-/* Skeleton animation */
+/* Skeleton Shimmer nos tons Convivere */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #edf1f7 25%, #f8fafc 50%, #edf1f7 75%);
+  background: linear-gradient(90deg, #edf4f1 25%, #f8fbf9 50%, #edf4f1 75%);
   background-size: 200% 100%;
   animation: shimmer 1.6s infinite ease-in-out;
-  border-radius: var(--radius-sm);
+  border-radius: 12px;
 }
 
-/* Gentle pulse */
-@keyframes pulse-gentle {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.04); opacity: 0.9; }
-}
-
-.pulse {
-  animation: pulse-gentle 2.2s infinite ease-in-out;
+/* Modo Impressão / PDF limpo */
+@media print {
+  .side, .topbar, .mobile-bottom, .no-print, .btn-no-print {
+    display: none !important;
+  }
+  .main {
+    margin: 0 !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
 }

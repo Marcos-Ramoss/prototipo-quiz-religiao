@@ -24,7 +24,7 @@ class GeminiAiQuestionGeneratorTest {
     @Test
     @DisplayName("Deve gerar questões de fallback quando a chave de API estiver vazia")
     void shouldGenerateFallbackQuestionsWhenApiKeyIsBlank() {
-        List<QuestionEntity> questions = generator.generateQuestions("Cristianismo", "Parábolas", "Médio", 5);
+        List<QuestionEntity> questions = generator.gerarQuestoes("Cristianismo", "Parábolas", "Médio", 5);
 
         assertNotNull(questions);
         assertEquals(5, questions.size());

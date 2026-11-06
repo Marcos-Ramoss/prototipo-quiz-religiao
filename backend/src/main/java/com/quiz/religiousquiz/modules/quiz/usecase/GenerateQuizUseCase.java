@@ -36,45 +36,49 @@ public class GenerateQuizUseCase {
         this.sessionTtlMinutes = sessionTtlMinutes;
     }
 
-    public QuizSessionResponse execute(GenerateQuizRequest request) {
-        validateParameters(request);
+    public QuizSessionResponse executar(GenerateQuizRequest requisicao) {
+        validarParametros(requisicao);
 
-        String religiao = request.religiao().trim();
-        String tema = request.tema() != null ? request.tema().trim() : "";
-        String dificuldade = request.dificuldade().trim();
-        int quantidade = request.quantidade();
+        String religiao = requisicao.religiao().trim();
+        String tema = requisicao.tema() != null ? requisicao.tema().trim() : "";
+        String dificuldade = requisicao.dificuldade().trim();
+        int quantidade = requisicao.quantidade();
 
-        List<QuestionEntity> questions = aiQuestionGenerator.generateQuestions(
+        List<QuestionEntity> questoes = aiQuestionGenerator.gerarQuestoes(
                 religiao, tema, dificuldade, quantidade
         );
 
-        QuizSession session = createSession(religiao, tema, dificuldade, questions);
-        sessionRepository.save(session);
+        QuizSession sessao = criarSessao(religiao, tema, dificuldade, questoes);
+        sessionRepository.salvar(sessao);
 
-        List<PublicQuestionDto> publicQuestions = mapToPublicQuestions(questions);
+        List<PublicQuestionDto> questoesPublicas = mapearParaQuestoesPublicas(questoes);
 
         return new QuizSessionResponse(
-                session.getId(),
-                session.getReligiao(),
-                session.getTema(),
-                session.getDificuldade(),
-                publicQuestions
+                sessao.getId(),
+                sessao.getReligiao(),
+                sessao.getTema(),
+                sessao.getDificuldade(),
+                questoesPublicas
         );
     }
 
-    private void validateParameters(GenerateQuizRequest request) {
-        if (request.religiao() == null || request.religiao().isBlank()) {
+    public QuizSessionResponse execute(GenerateQuizRequest requisicao) {
+        return executar(requisicao);
+    }
+
+    private void validarParametros(GenerateQuizRequest requisicao) {
+        if (requisicao.religiao() == null || requisicao.religiao().isBlank()) {
             throw new InvalidQuizParametersException("A religião deve ser informada.");
         }
-        if (request.dificuldade() == null || request.dificuldade().isBlank()) {
+        if (requisicao.dificuldade() == null || requisicao.dificuldade().isBlank()) {
             throw new InvalidQuizParametersException("A dificuldade deve ser informada.");
         }
-        if (request.quantidade() == null || !QUANTIDADES_PERMITIDAS.contains(request.quantidade())) {
+        if (requisicao.quantidade() == null || !QUANTIDADES_PERMITIDAS.contains(requisicao.quantidade())) {
             throw new InvalidQuizParametersException("A quantidade de perguntas deve ser 5, 10 ou 15.");
         }
     }
 
-    private QuizSession createSession(String religiao, String tema, String dificuldade, List<QuestionEntity> questions) {
+    private QuizSession criarSessao(String religiao, String tema, String dificuldade, List<QuestionEntity> questoes) {
         String sessionId = UUID.randomUUID().toString();
         Instant now = Instant.now();
         Instant expiresAt = now.plus(sessionTtlMinutes, ChronoUnit.MINUTES);
@@ -86,12 +90,12 @@ public class GenerateQuizUseCase {
                 dificuldade,
                 now,
                 expiresAt,
-                questions
+                questoes
         );
     }
 
-    private List<PublicQuestionDto> mapToPublicQuestions(List<QuestionEntity> questions) {
-        return questions.stream()
+    private List<PublicQuestionDto> mapearParaQuestoesPublicas(List<QuestionEntity> questoes) {
+        return questoes.stream()
                 .map(q -> new PublicQuestionDto(
                         q.getId(),
                         q.getPergunta(),
@@ -103,4 +107,3 @@ public class GenerateQuizUseCase {
                 .toList();
     }
 }
-

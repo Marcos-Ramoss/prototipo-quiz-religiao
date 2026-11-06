@@ -27,15 +27,15 @@ export class QuizResultComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.result && this.result.aproveitamento >= 50) {
-      this.triggerConfetti();
+      this.dispararConfetes();
     }
   }
 
-  triggerCelebration(): void {
-    this.triggerConfetti();
+  dispararCelebracao(): void {
+    this.dispararConfetes();
   }
 
-  triggerConfetti(): void {
+  dispararConfetes(): void {
     try {
       confetti({
         particleCount: 110,
@@ -61,79 +61,91 @@ export class QuizResultComponent implements OnInit {
     }
   }
 
-  getMedal(aproveitamento: number): MedalInfo {
+  exportarParaPdf(): void {
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
+  }
+
+  obterFeedbackPontuacao(aproveitamento: number): { title: string; message: string; badgeClass: string } {
+    if (aproveitamento === 100) {
+      return {
+        title: 'Excelente! Domínio Absoluto!',
+        message: 'Você demonstrou conhecimento profundo sobre os ensinamentos, a história e as tradições.',
+        badgeClass: 'score-perfect'
+      };
+    }
+    if (aproveitamento >= 80) {
+      return {
+        title: 'Muito Bom! Ótimo Aproveitamento!',
+        message: 'Você tem uma sólida compreensão dos princípios e práticas dessa tradição religiosa.',
+        badgeClass: 'score-great'
+      };
+    }
+    if (aproveitamento >= 60) {
+      return {
+        title: 'Bom Trabalho! Bom Conhecimento!',
+        message: 'Você compreende os aspectos centrais. Revise as questões abaixo para enriquecer ainda mais.',
+        badgeClass: 'score-good'
+      };
+    }
+    return {
+      title: 'Desafio Concluído! Continue Aprendendo!',
+      message: 'O diálogo inter-religioso é uma jornada contínua. Explore o gabarito comentado para aprofundar.',
+      badgeClass: 'score-learning'
+    };
+  }
+
+  obterMedalha(aproveitamento: number): MedalInfo {
     if (aproveitamento === 100) {
       return {
         type: 'ouro-diamante',
-        label: 'Medalha de Ouro Diamante',
-        icon: '💎🥇',
+        label: 'Medalha de Diamante ✦',
+        icon: '💎',
         cssClass: 'medal-diamond',
-        description: 'Desempenho histórico e teológico impecável com 100% de precisão!'
+        description: 'Pontuação perfeita! Erudição e domínio exemplar sobre a tradição.'
       };
-    } else if (aproveitamento >= 80) {
+    }
+    if (aproveitamento >= 80) {
       return {
         type: 'ouro',
-        label: 'Medalha de Ouro',
+        label: 'Medalha de Ouro 🥇',
         icon: '🥇',
         cssClass: 'medal-gold',
-        description: 'Excelente domínio dos fundamentos, narrativas e tradições!'
+        description: 'Excelente resultado! Alto nível de compreensão e respeito aos saberes.'
       };
-    } else if (aproveitamento >= 60) {
+    }
+    if (aproveitamento >= 60) {
       return {
         type: 'prata',
-        label: 'Medalha de Prata',
+        label: 'Medalha de Prata 🥈',
         icon: '🥈',
         cssClass: 'medal-silver',
-        description: 'Ótimo aproveitamento com sólido entendimento dos conceitos!'
+        description: 'Bom aproveitamento! Conhecimento consolidado nos temas essenciais.'
       };
-    } else if (aproveitamento >= 40) {
+    }
+    if (aproveitamento >= 40) {
       return {
         type: 'bronze',
-        label: 'Medalha de Bronze',
+        label: 'Medalha de Bronze 🥉',
         icon: '🥉',
         cssClass: 'medal-bronze',
-        description: 'Bom início de aprendizado! O gabarito enriquecerá seus estudos.'
-      };
-    } else {
-      return {
-        type: 'participacao',
-        label: 'Certificado de Aprendizado',
-        icon: '🎖️',
-        cssClass: 'medal-starter',
-        description: 'Cada erro é uma chance de descobrir novos fatos e fontes históricas.'
+        description: 'Boa participação! O diálogo e a curiosidade são o primeiro passo.'
       };
     }
+    return {
+      type: 'participacao',
+      label: 'Certificado de Participação 📜',
+      icon: '🌱',
+      cssClass: 'medal-starter',
+      description: 'Participação registrada! Explore os comentários educativos para expandir sua visão.'
+    };
   }
 
-  getScoreFeedback(aproveitamento: number): { title: string; badgeClass: string; message: string } {
-    if (aproveitamento === 100) {
-      return {
-        title: 'Desempenho Perfeito!',
-        badgeClass: 'score-badge-gold',
-        message: 'Você acertou todas as questões com maestria teológica e histórica.'
-      };
-    } else if (aproveitamento >= 70) {
-      return {
-        title: 'Excelente Resultado!',
-        badgeClass: 'score-badge-green',
-        message: 'Você demonstrou sólido conhecimento sobre os princípios abordados.'
-      };
-    } else if (aproveitamento >= 50) {
-      return {
-        title: 'Bom Aproveitamento!',
-        badgeClass: 'score-badge-blue',
-        message: 'Você possui boa noção sobre o tema; a revisão ajudará a fixar os detalhes.'
-      };
-    } else {
-      return {
-        title: 'Jornada de Conhecimento!',
-        badgeClass: 'score-badge-amber',
-        message: 'A leitura das explicações abaixo trará novos horizontes sobre esta religião.'
-      };
-    }
-  }
-
-  exportToPdf(): void {
-    window.print();
-  }
+  // Aliases para templates existentes
+  triggerCelebration = () => this.dispararCelebracao();
+  triggerConfetti = () => this.dispararConfetes();
+  exportToPdf = () => this.exportarParaPdf();
+  getScoreFeedback = (a: number) => this.obterFeedbackPontuacao(a);
+  getMedal = (a: number) => this.obterMedalha(a);
 }

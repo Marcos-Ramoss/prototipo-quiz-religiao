@@ -59,5 +59,25 @@ export interface ReligionOption {
   name: string;
   icon: string;
   desc: string;
+  color?: string;
+  category?: string;
 }
+
+export interface QuizStats {
+  quizzesCriados: number;
+  perguntasDisponiveis: number;
+  tradicoesCadastradas: number;
+  participacoesRealizadas: number;
+}
+
+export interface ActivityItem {
+  id: string;
+  type: 'quiz_created' | 'quiz_completed' | 'questions_added' | 'tradition_updated';
+  title: string;
+  subtitle: string;
+  timeAgo: string;
+  icon: string;
+  iconBgClass: string;
+}
+
 

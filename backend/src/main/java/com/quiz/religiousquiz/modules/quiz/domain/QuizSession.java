@@ -67,11 +67,19 @@ public class QuizSession {
         return createdAt;
     }
 
+    public Instant getCriadoEm() {
+        return createdAt;
+    }
+
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
     public Instant getExpiresAt() {
+        return expiresAt;
+    }
+
+    public Instant getExpiraEm() {
         return expiresAt;
     }
 

@@ -1,95 +1,187 @@
-<div class="app-layout">
-  <!-- Top Navbar -->
-  <header class="app-navbar">
-    <div class="navbar-left" (click)="onRestartConfig()" role="button" tabindex="0" title="Voltar ao Início">
-      <div class="navbar-logo-badge">
-        <svg class="sparkle-icon" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
-        </svg>
+<div class="app">
+  <!-- Backdrop escurecido para Drawer Mobile -->
+  <div class="mobile-overlay" [class.show]="isDrawerOpen" (click)="closeDrawer()"></div>
+
+  <!-- Sidebar Fixa (Desktop) / Drawer Deslizante (Mobile) -->
+  <aside class="side" [class.open]="isDrawerOpen" [class.collapsed]="isSidebarCollapsed">
+    <div class="brand" (click)="onNavigate('quiz')" role="button" tabindex="0" title="Ir para o Quiz">
+      <div class="logo">✧</div>
+      @if (!isSidebarCollapsed) {
+      <div class="brand-text">
+        <strong>convivere</strong>
+        <small>Conhecer · Respeitar · Dialogar</small>
       </div>
-      <div class="navbar-titles">
-        <h1 class="navbar-brand">Quiz das Religiões</h1>
-        <p class="navbar-tagline">Conhecimento, cultura e tradições</p>
-      </div>
+      }
     </div>
 
-    <div class="navbar-right">
-      <button type="button" class="nav-link-btn" (click)="onRestartConfig()">
-        Início
+    <div class="nav-scroll">
+      <!-- Módulo Ativo: Quiz Educativo -->
+      @if (!isSidebarCollapsed) {
+      <div class="navgroup">MÓDULO ATIVO</div>
+      }
+      <button type="button" class="nav-item active" (click)="onNavigate('quiz')"
+        [title]="isSidebarCollapsed ? 'Quizzes Educativos com IA' : ''">
+        <span class="navic">◉</span>
+        @if (!isSidebarCollapsed) {
+        <span class="nav-label">Quizzes</span>
+        <span class="nav-badge-live">Ativo</span>
+        }
       </button>
-      <div class="pace-pill">
-        <svg class="small-sparkle" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
-        </svg>
-        <span>Aprenda no seu ritmo</span>
-      </div>
     </div>
-  </header>
 
-  <!-- Hero Banner (Apenas na tela de Configuração) -->
-  @if (viewState === 'config') {
-    <section class="hero-banner">
-      <div class="hero-content">
-        <span class="hero-kicker">UMA JORNADA PELO CONHECIMENTO</span>
-        <h2 class="hero-title">
-          Descubra. Aprenda.<br>
-          Desafie seu conhecimento.
-        </h2>
-        <p class="hero-description">
-          Explore diferentes tradições religiosas, teste o que você sabe e descubra novas perspectivas a cada pergunta.
-        </p>
+    <div class="nav-footer">
+      @if (!isSidebarCollapsed) {
+      <div class="sidebar-dove-box">
+        <span class="dove-icon">🕊️</span>
+        <p class="dove-quote">Diálogo que transforma conhecimento em respeito.</p>
+      </div>
+      }
+
+
+    </div>
+  </aside>
+
+  <!-- Área Principal -->
+  <main class="main" [class.sidebar-collapsed]="isSidebarCollapsed">
+    <!-- Topbar com Backdrop Blur -->
+    <header class="topbar">
+      <div class="crumb">
+        <small>CONVIVERE / APRENDER</small>
+        <span>Quizzes Educativos</span>
       </div>
 
-      <div class="hero-badge-container">
-        <div class="glass-badge">
-          <svg class="glass-star-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 1L14.8 9.2L23 12L14.8 14.8L12 23L9.2 14.8L1 12L9.2 9.2L12 1Z"/>
-          </svg>
+      <label class="top-search">
+        <span class="search-ico">⌕</span>
+        <input placeholder="Pesquisar tradições, temas ou quizzes..." aria-label="Pesquisar"
+          (keyup.enter)="onRestartConfig()">
+        <span class="kbd">Enter ↵</span>
+      </label>
+
+      <div class="top-actions">
+        <button type="button" class="icon-button" title="Sobre o projeto" (click)="openInfoModal()">?</button>
+        <button type="button" class="avatar" (click)="onNavigate('profile')" title="O meu perfil">CV</button>
+      </div>
+    </header>
+
+    <!-- Conteúdo da Página -->
+    <div class="content">
+      <!-- Hero Banner Oficial Convivere (Apenas na tela de configuração) -->
+      @if (viewState === 'config') {
+      <section class="hero">
+        <div class="hero-copy">
+          <span class="hero-badge">✦ CONVIVERE</span>
+          <h1 class="hero-title">
+            Quizzes Educativos<br>
+            <span class="hero-highlight">sobre religiões e tradições</span>
+          </h1>
+          <p class="hero-desc">
+            Explore diferentes crenças, aprofunde seu conhecimento e promova o respeito à diversidade religiosa por meio
+            de quizzes interativos com IA.
+          </p>
+          <div class="hero-actions">
+            <button type="button" class="btn orange" (click)="onRestartConfig()">▶ Criar novo quiz</button>
+            <button type="button" class="btn secondary" (click)="openInfoModal()">📖 Explorar tradições</button>
+          </div>
         </div>
+
+        <div class="hero-art">
+          <div class="art-rings">
+            <span class="art-center">✧</span>
+            <div class="art-orbit one" title="Paz">☮</div>
+            <div class="art-orbit two" title="Conhecimento">✦</div>
+            <div class="art-orbit three" title="Respeito">♡</div>
+          </div>
+        </div>
+      </section>
+      }
+
+      <!-- Alerta de Erro -->
+      @if (errorMessage) {
+      <div class="callout-error">
+        <div class="error-icon">⚠️</div>
+        <div class="error-body">
+          <strong>Não foi possível concluir a ação:</strong>
+          <p>{{ errorMessage }}</p>
+        </div>
+        <button type="button" class="close-error-btn" (click)="dismissError()">✕</button>
       </div>
-    </section>
-  }
+      }
 
-  <!-- Mensagem de Erro Global -->
-  @if (errorMessage) {
-    <div class="alert-box alert-error">
-      <div class="alert-icon">⚠️</div>
-      <div class="alert-text">{{ errorMessage }}</div>
-      <button class="alert-close" (click)="dismissError()" aria-label="Fechar alerta">✕</button>
-    </div>
-  }
+      <!-- TELA 1: CONFIGURAÇÃO DO QUIZ -->
+      @if (viewState === 'config') {
+      <app-quiz-config (generate)="onGenerateQuiz($event)"></app-quiz-config>
+      }
 
-  <!-- Main Views Container -->
-  <main class="main-body">
-    <!-- ==================== TELA 1: CONFIGURAÇÃO ==================== -->
-    @if (viewState === 'config') {
-      <app-quiz-config
-        (generate)="onGenerateQuiz($event)">
-      </app-quiz-config>
-    }
+      <!-- TELA 2: SKELETON LOADING -->
+      @if (viewState === 'loading' || viewState === 'submitting') {
+      <app-quiz-skeleton [message]="loadingMessage"></app-quiz-skeleton>
+      }
 
-    <!-- ==================== TELA 2: SKELETON LOADING ==================== -->
-    @if (viewState === 'loading' || viewState === 'submitting') {
-      <app-quiz-skeleton
-        [message]="loadingMessage">
-      </app-quiz-skeleton>
-    }
-
-    <!-- ==================== TELA 3: EXECUÇÃO DO QUIZ ==================== -->
-    @if (viewState === 'quiz' && quizSession) {
-      <app-quiz-runner
-        [session]="quizSession"
-        (submitQuiz)="onSubmitQuiz($event)">
+      <!-- TELA 3: RUNNER DO QUIZ -->
+      @if (viewState === 'quiz' && quizSession) {
+      <app-quiz-runner [session]="quizSession" (submitQuiz)="onSubmitQuiz($event)">
       </app-quiz-runner>
-    }
+      }
 
-    <!-- ==================== TELA 4: RESULTADOS DO QUIZ ==================== -->
-    @if (viewState === 'result' && quizResult) {
-      <app-quiz-result
-        [result]="quizResult"
-        (restart)="onRestartConfig()"
-        (retry)="onRetrySameConfig()">
+      <!-- TELA 4: RESULTADO DO QUIZ -->
+      @if (viewState === 'result' && quizResult) {
+      <app-quiz-result [result]="quizResult" (restart)="onRestartConfig()" (retry)="onRetrySameConfig()">
       </app-quiz-result>
-    }
+      }
+
+      <footer class="footer-note">
+        Convivere · Protótipo conceptual para apresentação · Conteúdos educativos sujeitos à curadoria especializada
+      </footer>
+    </div>
   </main>
+
+  <!-- Mobile Bottom Navigation Bar (Fixo para telas <= 820px) -->
+  <nav class="mobile-bottom">
+    <button type="button" (click)="onRestartConfig()" class="on" title="Quiz Educativo">
+      <span>◉</span>Quiz
+    </button>
+    <button type="button" (click)="openInfoModal()" title="Sobre o Projeto">
+      <span>?</span>Sobre
+    </button>
+    <button type="button" (click)="toggleDrawer()" title="Menu lateral">
+      <span>☰</span>Menu
+    </button>
+  </nav>
+
+  <!-- Toast Flutuante de Feedback -->
+  @if (toastMessage) {
+  <div class="toast">
+    {{ toastMessage }}
+  </div>
+  }
+
+  <!-- Modal "Sobre o Projeto" -->
+  @if (infoModalOpen) {
+  <div class="modal-backdrop" (click)="closeInfoModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h2>✧ Sobre a Plataforma Convivere</h2>
+        <button type="button" class="icon-button" (click)="closeInfoModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Convivere (conhecer · respeitar)</strong> é uma EdTech digital voltada para a educação religiosa,
+          diálogo inter-religioso e formação intercultural.</p>
+        <div class="callout">
+          <b>Módulo Atual:</b> Quizzes Educativos com Inteligência Artificial generativa para aprendizado dinâmico e
+          respeitoso.
+        </div>
+        <p>Próximos módulos planejados no roadmap:</p>
+        <ul style="padding-left: 20px; margin: 10px 0; color: var(--muted); font-size: 13px;">
+          <li>Enciclopédia e Biblioteca de tradições religiosas</li>
+          <li>Comparador de características e valores</li>
+          <li>Linha do tempo histórica</li>
+          <li>Simulações corporativas para equipes e trainees (B2B)</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn secondary small" (click)="closeInfoModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+  }
 </div>

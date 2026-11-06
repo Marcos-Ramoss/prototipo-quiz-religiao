@@ -57,14 +57,14 @@ class SubmitQuizUseCaseTest {
                 List.of(q1, q2)
         );
 
-        when(sessionRepository.findById(quizId)).thenReturn(Optional.of(session));
+        when(sessionRepository.buscarPorId(quizId)).thenReturn(Optional.of(session));
 
         SubmitQuizRequest request = new SubmitQuizRequest(quizId, List.of(
                 new AnswerSubmissionDto("q1", "A"),
                 new AnswerSubmissionDto("q2", "A")
         ));
 
-        QuizResultResponse response = submitQuizUseCase.execute(request);
+        QuizResultResponse response = submitQuizUseCase.executar(request);
 
         assertNotNull(response);
         assertEquals(2, response.totalQuestoes());
@@ -84,13 +84,13 @@ class SubmitQuizUseCaseTest {
     @Test
     @DisplayName("Deve lançar QuizNotFoundException se a sessão não existir")
     void deveLancarExcecaoQuandoSessaoNaoEncontrada() {
-        when(sessionRepository.findById("inexistente")).thenReturn(Optional.empty());
+        when(sessionRepository.buscarPorId("inexistente")).thenReturn(Optional.empty());
 
         SubmitQuizRequest request = new SubmitQuizRequest("inexistente", List.of(
                 new AnswerSubmissionDto("q1", "A")
         ));
 
-        assertThrows(QuizNotFoundException.class, () -> submitQuizUseCase.execute(request));
+        assertThrows(QuizNotFoundException.class, () -> submitQuizUseCase.executar(request));
     }
 }
 

@@ -1,139 +1,240 @@
-<section class="config-card">
-  <!-- 01 Escolha uma tradição -->
-  <div class="section-block">
-    <div class="section-header">
-      <span class="step-pill">01</span>
-      <div>
-        <h2 class="section-title">Escolha uma tradição</h2>
-        <p class="section-subtitle">Qual universo de conhecimento você deseja explorar hoje?</p>
+<div class="config-view-container">
+  <!-- 1. Linha Superior de Métricas Dinâmicas (Cards de Estatísticas) -->
+  @if (stats$ | async; as stats) {
+  <section class="stats-overview-grid" aria-label="Estatísticas da Plataforma">
+    <div class="stat-metric-card">
+      <div class="stat-icon-badge badge-mint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="metric-svg">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+        </svg>
+      </div>
+      <div class="stat-metric-info">
+        <strong class="stat-metric-number">{{ stats.quizzesCriados | number }}</strong>
+        <span class="stat-metric-label">Quizzes criados</span>
       </div>
     </div>
 
-    <div class="religion-grid">
-      @for (rel of religions; track rel.id) {
-        <button
-          type="button"
-          class="religion-card"
-          [class.selected]="religiaoSelecionada === rel.id"
-          (click)="selectReligion(rel.id)">
-          
-          <div class="card-icon-box">
-            <span class="rel-symbol">{{ rel.icon }}</span>
-          </div>
-
-          @if (religiaoSelecionada === rel.id) {
-            <span class="check-badge">✓</span>
-          }
-
-          <div class="card-text">
-            <h3 class="rel-title">{{ rel.name }}</h3>
-            <p class="rel-desc">{{ rel.desc }}</p>
-          </div>
-        </button>
-      }
-    </div>
-  </div>
-
-  <!-- 02 Personalize seu desafio -->
-  <div class="section-block">
-    <div class="section-header">
-      <span class="step-pill">02</span>
-      <div>
-        <h2 class="section-title">Personalize seu desafio</h2>
-        <p class="section-subtitle">Escolha o nível e o formato mais adequados para você.</p>
+    <div class="stat-metric-card">
+      <div class="stat-icon-badge badge-blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="metric-svg">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <div class="stat-metric-info">
+        <strong class="stat-metric-number">{{ stats.perguntasDisponiveis | number }}</strong>
+        <span class="stat-metric-label">Perguntas disponíveis</span>
       </div>
     </div>
 
-    <div class="controls-grid">
-      <!-- Nível de dificuldade -->
-      <div class="control-box">
-        <label class="control-label">Nível de dificuldade</label>
-        <div class="capsule-group">
-          @for (dif of difficulties; track dif) {
-            <button
-              type="button"
-              class="capsule-btn"
-              [class.active]="dificuldadeSelecionada === dif"
-              (click)="selectDifficulty(dif)">
-              {{ dif }}
-            </button>
-          }
+    <div class="stat-metric-card">
+      <div class="stat-icon-badge badge-amber">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="metric-svg">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+      </div>
+      <div class="stat-metric-info">
+        <strong class="stat-metric-number">{{ stats.tradicoesCadastradas | number }}</strong>
+        <span class="stat-metric-label">Tradições cadastradas</span>
+      </div>
+    </div>
+
+    <div class="stat-metric-card">
+      <div class="stat-icon-badge badge-purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="metric-svg">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+      </div>
+      <div class="stat-metric-info">
+        <strong class="stat-metric-number">{{ stats.participacoesRealizadas | number }}</strong>
+        <span class="stat-metric-label">Participações realizadas</span>
+      </div>
+    </div>
+  </section>
+  }
+
+  <!-- 2. Grid Principal: Formulário de Quiz (Esquerda) + Widgets Informativos (Direita) -->
+  <div class="dashboard-two-cols">
+    <!-- Coluna Esquerda: Card de Criação do Quiz -->
+    <section class="main-create-card">
+      <div class="create-card-header">
+        <div class="target-icon-box">
+          <span class="target-symbol">🎯</span>
+        </div>
+        <div>
+          <h2 class="create-title">Criar um novo quiz</h2>
+          <p class="create-subtitle">Defina o tema, o nível de dificuldade e a quantidade de perguntas.</p>
         </div>
       </div>
 
-      <!-- Quantidade de perguntas -->
-      <div class="control-box">
-        <label class="control-label">Quantidade de perguntas</label>
-        <div class="capsule-group">
-          @for (qtd of quantities; track qtd) {
-            <button
-              type="button"
-              class="capsule-btn"
-              [class.active]="quantidadeSelecionada === qtd"
-              (click)="selectQuantity(qtd)">
-              {{ qtd }}
-            </button>
-          }
+      <!-- ETAPA 1: SELEÇÃO DA TRADIÇÃO -->
+      <div class="step-container">
+        <div class="step-title-row">
+          <span class="step-circle-badge">1</span>
+          <div class="step-headings">
+            <h3 class="step-name">Selecione uma tradição ou tema</h3>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Algum assunto específico? (opcional) -->
-    <div class="subject-box">
-      <label class="control-label">
-        Algum assunto específico? <span class="optional-text">(opcional)</span>
-      </label>
-      <div class="input-wrapper">
-        <input
-          type="text"
-          class="subject-input"
-          placeholder="Ex: História, textos sagrados, ensinamentos..."
-          [(ngModel)]="temaInformado" />
-        @if (temaInformado) {
-          <button
-            type="button"
-            class="clear-input-btn"
-            (click)="clearTheme()"
-            title="Limpar assunto">
-            ✕
+        <div class="religions-cards-grid">
+          @for (rel of religions; track rel.id) {
+          <button type="button" class="tradition-card" [class.is-selected]="religiaoSelecionada === rel.id"
+            (click)="selectReligion(rel.id)">
+            <div class="tradition-symbol-box" [style.color]="rel.color">
+              <span class="trad-symbol">{{ rel.icon }}</span>
+            </div>
+            <div class="tradition-info">
+              <strong class="trad-name">{{ rel.name }}</strong>
+              <span class="trad-desc">{{ rel.desc }}</span>
+            </div>
+            @if (religiaoSelecionada === rel.id) {
+            <div class="trad-selected-badge">✓</div>
+            }
           </button>
-        }
+          }
+        </div>
       </div>
 
-      <!-- Explore temas populares -->
-      @if (currentSuggestedThemes.length > 0) {
-        <div class="popular-themes-area">
-          <span class="popular-themes-label">Explore temas populares</span>
-          <div class="popular-tags-list overflow-x-auto scrollbar-hide">
-            @for (sug of currentSuggestedThemes; track sug) {
-              <button
-                type="button"
-                class="tag-pill"
-                [class.active]="temaInformado === sug"
-                (click)="selectTheme(sug)">
-                + {{ sug }}
+      <!-- ETAPA 2: CONFIGURAÇÃO DO DESAFIO -->
+      <div class="step-container">
+        <div class="step-title-row">
+          <span class="step-circle-badge">2</span>
+          <div class="step-headings">
+            <h3 class="step-name">Configure seu desafio</h3>
+          </div>
+        </div>
+
+        <div class="config-options-row">
+          <!-- Dificuldade -->
+          <div class="option-field-group">
+            <label class="field-label">Nível de dificuldade</label>
+            <div class="segmented-capsule-control">
+              @for (dif of difficulties; track dif) {
+              <button type="button" class="capsule-btn" [class.active]="dificuldadeSelecionada === dif"
+                (click)="selectDifficulty(dif)">
+                {{ dif }}
               </button>
+              }
+            </div>
+          </div>
+
+          <!-- Quantidade de Questões -->
+          <div class="option-field-group">
+            <label class="field-label">Quantidade de perguntas</label>
+            <div class="segmented-capsule-control">
+              @for (qtd of quantities; track qtd) {
+              <button type="button" class="capsule-btn" [class.active]="quantidadeSelecionada === qtd"
+                (click)="selectQuantity(qtd)">
+                {{ qtd }} questões
+              </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Tema Específico Opcional -->
+        <div class="theme-field-wrapper">
+          <label class="field-label" for="theme-input">
+            Algum tema específico? <span class="label-optional">(opcional)</span>
+          </label>
+          <div class="theme-input-box">
+            <span class="input-search-icon">🔍</span>
+            <input id="theme-input" type="text" class="theme-text-input" [(ngModel)]="temaInformado"
+              placeholder="Ex: Festas judaicas, história de Israel, parábolas, costumes..."
+              (keyup.enter)="submitConfig()" />
+            @if (temaInformado) {
+            <button type="button" class="clear-input-btn" (click)="temaInformado = ''" title="Limpar tema">✕</button>
             }
           </div>
+
+          <!-- Sugestões Rápidas de Tema -->
+          @if (currentSuggestedThemes.length > 0) {
+          <div class="suggested-chips-tray">
+            <span class="chips-caption">Sugestões:</span>
+            @for (theme of currentSuggestedThemes; track theme) {
+            <button type="button" class="theme-chip-pill" [class.selected]="temaInformado === theme"
+              (click)="selectTheme(theme)">
+              {{ theme }}
+            </button>
+            }
+          </div>
+          }
         </div>
-      }
-    </div>
-  </div>
 
-  <!-- Bottom Action Bar -->
-  <div class="bottom-action-bar">
-    <div class="summary-info">
-      <span class="summary-question">Tudo pronto para começar?</span>
-      <span class="summary-details">
-        {{ selectedReligionName }} · {{ quantidadeSelecionada }} perguntas · Nível {{ dificuldadeSelecionada.toLowerCase() }}
-      </span>
-    </div>
+        <!-- Barra Inferior de Ações -->
+        <div class="create-card-actions">
+          <button type="button" class="btn-reset-form" (click)="resetForm()" title="Redefinir campos">
+            <span>🔄</span> Limpar
+          </button>
 
-    <button
-      type="button"
-      class="start-quiz-btn"
-      (click)="submitConfig()">
-      Começar meu quiz →
-    </button>
+          <button type="button" class="btn-start-quiz" (click)="submitConfig()">
+            <span>Criar meu quiz</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Coluna Direita: Widgets Informativos e Atividades -->
+    <aside class="sidebar-widgets-column">
+      <!-- Widget 1: Por que usar o Convivere? -->
+      <div class="info-widget-card promo-card">
+        <div class="widget-header-row">
+          <span class="widget-icon">💡</span>
+          <h3 class="widget-title">Por que usar o Convivere?</h3>
+        </div>
+        <ul class="convivere-reasons-list">
+          <li class="reason-item">
+            <span class="check-circle-icon">✓</span>
+            <span class="reason-text">Aprendizagem interativa e acessível</span>
+          </li>
+          <li class="reason-item">
+            <span class="check-circle-icon">✓</span>
+            <span class="reason-text">Conteúdo confiável e educativo</span>
+          </li>
+          <li class="reason-item">
+            <span class="check-circle-icon">✓</span>
+            <span class="reason-text">Valorização da diversidade religiosa</span>
+          </li>
+          <li class="reason-item">
+            <span class="check-circle-icon">✓</span>
+            <span class="reason-text">Estímulo ao diálogo e ao respeito</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Widget 2: Últimas Atividades Dinâmicas -->
+      <div class="info-widget-card activities-card">
+        <div class="widget-header-row justify-between">
+          <div class="widget-title-group">
+            <span class="widget-icon">📊</span>
+            <h3 class="widget-title">Últimas atividades</h3>
+          </div>
+          <span class="widget-link-all">Atualizado</span>
+        </div>
+
+        <div class="activities-stream-list">
+          @if (activities$ | async; as activities) {
+          @for (act of activities; track act.id) {
+          <div class="activity-feed-item">
+            <div class="activity-icon-circle" [ngClass]="act.iconBgClass">
+              {{ act.icon }}
+            </div>
+            <div class="activity-details">
+              <strong class="activity-headline">{{ act.title }}</strong>
+              <span class="activity-time-caption">{{ act.timeAgo }}</span>
+            </div>
+          </div>
+          }
+          }
+        </div>
+      </div>
+    </aside>
   </div>
-</section>
+</div>

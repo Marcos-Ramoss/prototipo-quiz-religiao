@@ -12,7 +12,7 @@ import { QuizSkeletonComponent } from './modules/quiz/components/quiz-skeleton/q
 import { QuizRunnerComponent } from './modules/quiz/components/quiz-runner/quiz-runner.component';
 import { QuizResultComponent } from './modules/quiz/components/quiz-result/quiz-result.component';
 
-type ViewState = 'config' | 'loading' | 'quiz' | 'submitting' | 'result';
+type EstadoVisualizacao = 'config' | 'loading' | 'quiz' | 'submitting' | 'result';
 
 @Component({
   selector: 'app-root',
@@ -30,7 +30,7 @@ type ViewState = 'config' | 'loading' | 'quiz' | 'submitting' | 'result';
 export class App {
   private readonly quizService = inject(QuizService);
 
-  viewState: ViewState = 'config';
+  viewState: EstadoVisualizacao = 'config';
   errorMessage: string | null = null;
   loadingMessage: string = '';
 
@@ -38,17 +38,86 @@ export class App {
   quizSession: QuizSession | null = null;
   quizResult: QuizResult | null = null;
 
-  dismissError(): void {
+  isDrawerOpen: boolean = false;
+  isSidebarCollapsed: boolean = false;
+  toastMessage: string | null = null;
+  infoModalOpen: boolean = false;
+  private toastTimer: any = null;
+
+  alternarGaveta(): void {
+    this.isDrawerOpen = !this.isDrawerOpen;
+  }
+
+  fecharGaveta(): void {
+    this.isDrawerOpen = false;
+  }
+
+  alternarColapsoBarraLateral(): void {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+  }
+
+  alternarMenu(): void {
+    if (typeof window !== 'undefined' && window.innerWidth <= 820) {
+      this.alternarGaveta();
+    } else {
+      this.alternarColapsoBarraLateral();
+    }
+  }
+
+  aoNavegar(modulo: string): void {
+    this.fecharGaveta();
+    if (modulo === 'quiz' || modulo === 'home') {
+      this.aoReiniciarConfig();
+      return;
+    }
+    const nomesModulos: Record<string, string> = {
+      library: 'Enciclopédia Religiosa',
+      compare: 'Comparador de Religiões',
+      timeline: 'Linha do Tempo',
+      courses: 'Cursos e Formações',
+      simulations: 'Simulações e Role-play',
+      certificates: 'Certificados',
+      events: 'Agenda de Eventos',
+      forum: 'Espaço de Diálogo',
+      corporate: 'Painel Corporativo',
+      team: 'Colaboradores',
+      admin: 'Administração',
+      profile: 'O Meu Perfil',
+      help: 'Sobre o Projeto'
+    };
+    const nome = nomesModulos[modulo] || modulo;
+    this.exibirToast(`O módulo "${nome}" será implementado na próxima etapa. Estamos focados no Quiz com IA!`);
+  }
+
+  exibirToast(mensagem: string): void {
+    this.toastMessage = mensagem;
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+    }
+    this.toastTimer = setTimeout(() => {
+      this.toastMessage = null;
+    }, 3500);
+  }
+
+  abrirModalInfo(): void {
+    this.infoModalOpen = true;
+  }
+
+  fecharModalInfo(): void {
+    this.infoModalOpen = false;
+  }
+
+  fecharErro(): void {
     this.errorMessage = null;
   }
 
-  onGenerateQuiz(payload: GenerateQuizPayload): void {
+  aoGerarQuiz(payload: GenerateQuizPayload): void {
     this.lastConfigPayload = payload;
     this.errorMessage = null;
     this.viewState = 'loading';
     this.loadingMessage = `Conectando à IA para formular ${payload.quantidade} questões de ${payload.religiao}...`;
 
-    this.quizService.generateQuiz(payload).subscribe({
+    this.quizService.gerarQuiz(payload).subscribe({
       next: (session) => {
         this.quizSession = session;
         this.quizResult = null;
@@ -62,7 +131,7 @@ export class App {
     });
   }
 
-  onSubmitQuiz(userAnswers: Record<string, string>): void {
+  aoSubmeterQuiz(respostasUsuario: Record<string, string>): void {
     if (!this.quizSession) return;
 
     this.errorMessage = null;
@@ -71,7 +140,7 @@ export class App {
 
     const respostasPayload = this.quizSession.questoes.map(q => ({
       perguntaId: q.id,
-      respostaSelecionadaId: userAnswers[q.id] || ''
+      respostaSelecionadaId: respostasUsuario[q.id] || ''
     }));
 
     const payload: SubmitQuizPayload = {
@@ -79,7 +148,7 @@ export class App {
       respostas: respostasPayload
     };
 
-    this.quizService.submitQuiz(payload).subscribe({
+    this.quizService.submeterQuiz(payload).subscribe({
       next: (result) => {
         this.quizResult = result;
         this.viewState = 'result';
@@ -92,18 +161,33 @@ export class App {
     });
   }
 
-  onRestartConfig(): void {
+  aoReiniciarConfig(): void {
     this.viewState = 'config';
     this.quizSession = null;
     this.quizResult = null;
     this.errorMessage = null;
   }
 
-  onRetrySameConfig(): void {
+  aoTentarNovamenteMesmaConfig(): void {
     if (this.lastConfigPayload) {
-      this.onGenerateQuiz(this.lastConfigPayload);
+      this.aoGerarQuiz(this.lastConfigPayload);
     } else {
-      this.onRestartConfig();
+      this.aoReiniciarConfig();
     }
   }
+
+  // Aliases para compatibilidade
+  toggleDrawer = () => this.alternarGaveta();
+  closeDrawer = () => this.fecharGaveta();
+  toggleSidebarCollapse = () => this.alternarColapsoBarraLateral();
+  onToggleMenu = () => this.alternarMenu();
+  onNavigate = (m: string) => this.aoNavegar(m);
+  showToast = (m: string) => this.exibirToast(m);
+  openInfoModal = () => this.abrirModalInfo();
+  closeInfoModal = () => this.fecharModalInfo();
+  dismissError = () => this.fecharErro();
+  onGenerateQuiz = (p: GenerateQuizPayload) => this.aoGerarQuiz(p);
+  onSubmitQuiz = (r: Record<string, string>) => this.aoSubmeterQuiz(r);
+  onRestartConfig = () => this.aoReiniciarConfig();
+  onRetrySameConfig = () => this.aoTentarNovamenteMesmaConfig();
 }
