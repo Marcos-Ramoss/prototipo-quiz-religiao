@@ -1,5 +1,7 @@
 package com.quiz.religiousquiz.modules.quiz.repository.entity;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -31,7 +33,8 @@ public class ParticipacaoJpaEntity {
     @Column(name = "aproveitamento", nullable = false, precision = 5, scale = 2)
     private BigDecimal aproveitamento;
 
-    @Column(name = "respostas_usuario", columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "respostas_usuario", columnDefinition = "jsonb")
     private String respostasUsuario;
 
     @Column(name = "concluido_em", nullable = false)

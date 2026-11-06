@@ -6,9 +6,12 @@ import java.util.List;
 
 public class QuizSession {
     private String id;
+    private String titulo;
     private String religiao;
     private String tema;
     private String dificuldade;
+    private String status = "PUBLICADO";
+    private int tempoLimiteSegundos = 0;
     private Instant createdAt;
     private Instant expiresAt;
     private List<QuestionEntity> questoes = new ArrayList<>();
@@ -18,16 +21,29 @@ public class QuizSession {
 
     public QuizSession(String id, String religiao, String tema, String dificuldade,
                        Instant createdAt, Instant expiresAt, List<QuestionEntity> questoes) {
+        this(id, "Quiz sobre " + (religiao != null ? religiao : "Tradições"), religiao, tema, dificuldade,
+                "PUBLICADO", 0, createdAt, expiresAt, questoes);
+    }
+
+    public QuizSession(String id, String titulo, String religiao, String tema, String dificuldade,
+                       String status, int tempoLimiteSegundos,
+                       Instant createdAt, Instant expiresAt, List<QuestionEntity> questoes) {
         this.id = id;
+        this.titulo = (titulo != null && !titulo.isBlank()) ? titulo : "Quiz sobre " + (religiao != null ? religiao : "Tradições");
         this.religiao = religiao;
         this.tema = tema;
         this.dificuldade = dificuldade;
+        this.status = status != null ? status : "PUBLICADO";
+        this.tempoLimiteSegundos = Math.max(0, tempoLimiteSegundos);
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;
         this.questoes = questoes != null ? questoes : new ArrayList<>();
     }
 
     public boolean isExpired() {
+        if ("PUBLICADO".equalsIgnoreCase(status)) {
+            return false;
+        }
         return expiresAt != null && Instant.now().isAfter(expiresAt);
     }
 
@@ -85,6 +101,30 @@ public class QuizSession {
 
     public void setExpiresAt(Instant expiresAt) {
         this.expiresAt = expiresAt;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getTempoLimiteSegundos() {
+        return tempoLimiteSegundos;
+    }
+
+    public void setTempoLimiteSegundos(int tempoLimiteSegundos) {
+        this.tempoLimiteSegundos = tempoLimiteSegundos;
     }
 
     public List<QuestionEntity> getQuestoes() {

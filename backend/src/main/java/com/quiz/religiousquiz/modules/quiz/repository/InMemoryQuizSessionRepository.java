@@ -3,6 +3,7 @@ package com.quiz.religiousquiz.modules.quiz.repository;
 import com.quiz.religiousquiz.modules.quiz.domain.QuizSession;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +37,35 @@ public class InMemoryQuizSessionRepository implements QuizSessionRepository {
             return Optional.empty();
         }
         return Optional.of(sessao);
+    }
+
+    @Override
+    public List<QuizSession> listarPublicados() {
+        return armazenamento.values().stream()
+                .filter(q -> "PUBLICADO".equalsIgnoreCase(q.getStatus()) && !q.isExpired())
+                .sorted((a, b) -> b.getCriadoEm().compareTo(a.getCriadoEm()))
+                .toList();
+    }
+
+    @Override
+    public List<QuizSession> listarTodos() {
+        return armazenamento.values().stream()
+                .sorted((a, b) -> b.getCriadoEm().compareTo(a.getCriadoEm()))
+                .toList();
+    }
+
+    @Override
+    public void publicarQuiz(String id, String titulo, int tempoLimiteSegundos) {
+        QuizSession sessao = armazenamento.get(id);
+        if (sessao != null) {
+            if (titulo != null && !titulo.isBlank()) {
+                sessao.setTitulo(titulo);
+            }
+            if (tempoLimiteSegundos >= 0) {
+                sessao.setTempoLimiteSegundos(tempoLimiteSegundos);
+            }
+            sessao.setStatus("PUBLICADO");
+        }
     }
 
     @Override

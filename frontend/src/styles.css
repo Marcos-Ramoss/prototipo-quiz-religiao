@@ -91,6 +91,61 @@ a {
   border-radius: 12px;
 }
 
+/* Botões e Ações Globais Convivere */
+.btn {
+  border: 0;
+  border-radius: 12px;
+  background: var(--deep);
+  color: #ffffff;
+  padding: 10px 18px;
+  font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  background: #14524c;
+  box-shadow: 0 4px 12px rgba(11, 48, 52, 0.15);
+}
+
+.btn.primary {
+  background: var(--green);
+  color: #ffffff;
+}
+
+.btn.primary:hover {
+  background: #127560;
+  box-shadow: 0 4px 14px rgba(22, 140, 115, 0.25);
+}
+
+.btn.orange {
+  background: var(--orange);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(239, 155, 105, 0.35);
+}
+
+.btn.orange:hover {
+  background: #e08b59;
+}
+
+.btn.secondary {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: #245951;
+}
+
+.btn.secondary:hover {
+  background: #f0f8f5;
+  border-color: #b9dfd3;
+}
+
 /* Modo Impressão / PDF limpo */
 @media print {
   .side, .topbar, .mobile-bottom, .no-print, .btn-no-print {

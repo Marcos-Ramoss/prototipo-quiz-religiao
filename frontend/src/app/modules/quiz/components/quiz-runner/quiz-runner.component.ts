@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PublicQuestion, QuizSession } from '../../models/quiz.models';
 
@@ -9,17 +9,56 @@ import { PublicQuestion, QuizSession } from '../../models/quiz.models';
   templateUrl: './quiz-runner.component.html',
   styleUrl: './quiz-runner.component.css'
 })
-export class QuizRunnerComponent implements OnDestroy {
+export class QuizRunnerComponent implements OnInit, OnDestroy {
   @Input({ required: true }) session!: QuizSession;
   @Output() submitQuiz = new EventEmitter<Record<string, string>>();
 
   currentQuestionIndex: number = 0;
   userAnswers: Record<string, string> = {};
 
+  tempoRestanteSegundos: number = 0;
+  private timerInterval: any = null;
+
   isSpeaking: boolean = false;
   private currentUtterance: SpeechSynthesisUtterance | null = null;
 
+  ngOnInit(): void {
+    if (this.session.tempoLimiteSegundos && this.session.tempoLimiteSegundos > 0) {
+      this.tempoRestanteSegundos = this.session.tempoLimiteSegundos;
+      this.iniciarTemporizador();
+    }
+  }
+
+  get tempoLimiteAtivo(): boolean {
+    return (this.session.tempoLimiteSegundos || 0) > 0;
+  }
+
+  get tempoRestanteFormatado(): string {
+    const minutos = Math.floor(this.tempoRestanteSegundos / 60);
+    const segundos = this.tempoRestanteSegundos % 60;
+    return `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+  }
+
+  private iniciarTemporizador(): void {
+    this.timerInterval = setInterval(() => {
+      if (this.tempoRestanteSegundos > 0) {
+        this.tempoRestanteSegundos--;
+      } else {
+        this.pararTemporizador();
+        this.finalizar();
+      }
+    }, 1000);
+  }
+
+  private pararTemporizador(): void {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
   ngOnDestroy(): void {
+    this.pararTemporizador();
     this.pararNarracaoVoz();
   }
 

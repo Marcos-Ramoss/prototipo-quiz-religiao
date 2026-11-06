@@ -47,6 +47,21 @@ class QuizControllerTest {
     @MockBean
     private GetQuizStatsUseCase getQuizStatsUseCase;
 
+    @MockBean
+    private com.quiz.religiousquiz.modules.quiz.usecase.ListarQuizzesPublicadosUseCase listarQuizzesPublicadosUseCase;
+
+    @MockBean
+    private com.quiz.religiousquiz.modules.quiz.usecase.ListarQuizzesAdminUseCase listarQuizzesAdminUseCase;
+
+    @MockBean
+    private com.quiz.religiousquiz.modules.quiz.usecase.PublicarQuizUseCase publicarQuizUseCase;
+
+    @MockBean
+    private com.quiz.religiousquiz.modules.quiz.usecase.ObterQuizPorIdUseCase obterQuizPorIdUseCase;
+
+    @MockBean
+    private com.quiz.religiousquiz.modules.quiz.usecase.ExcluirQuizUseCase excluirQuizUseCase;
+
     @Test
     @DisplayName("GET /api/quiz/stats deve retornar 200 com QuizStatsResponse")
     void deveRetornarEstatisticasComSucesso() throws Exception {
@@ -109,6 +124,44 @@ class QuizControllerTest {
                 .andExpect(jsonPath("$.totalQuestoes").value(1))
                 .andExpect(jsonPath("$.acertos").value(1))
                 .andExpect(jsonPath("$.aproveitamento").value(100.0));
+    }
+
+    @Test
+    @DisplayName("GET /api/quiz/publicados deve retornar lista de quizzes para o aluno")
+    void deveListarQuizzesPublicados() throws Exception {
+        var resumo = new com.quiz.religiousquiz.modules.quiz.dto.QuizSummaryResponse(
+                "q-1", "Tradições Judaicas", "Judaísmo", "Festas", "Fácil", 10, 600, "PUBLICADO", java.time.Instant.now()
+        );
+        when(listarQuizzesPublicadosUseCase.executar()).thenReturn(List.of(resumo));
+
+        mockMvc.perform(get("/api/quiz/publicados"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value("q-1"))
+                .andExpect(jsonPath("$[0].titulo").value("Tradições Judaicas"))
+                .andExpect(jsonPath("$[0].tempoLimiteSegundos").value(600));
+    }
+
+    @Test
+    @DisplayName("GET /api/quiz/{id} deve retornar 200 com QuizSessionResponse")
+    void deveObterQuizPorIdComSucesso() throws Exception {
+        QuizSessionResponse response = new QuizSessionResponse(
+                "q-1", "Quiz: Judaísmo", "Judaísmo", "Festas", "Fácil", "PUBLICADO", 300,
+                List.of(new PublicQuestionDto("p-1", "Pergunta 1", List.of(new AlternativeDto("A", "Resp A")), "Fácil"))
+        );
+        when(obterQuizPorIdUseCase.executar("q-1")).thenReturn(response);
+
+        mockMvc.perform(get("/api/quiz/q-1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quizId").value("q-1"))
+                .andExpect(jsonPath("$.titulo").value("Quiz: Judaísmo"))
+                .andExpect(jsonPath("$.questoes[0].id").value("p-1"));
+    }
+
+    @Test
+    @DisplayName("DELETE /api/quiz/{id} deve retornar 204")
+    void deveExcluirQuizComSucesso() throws Exception {
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/quiz/q-1"))
+                .andExpect(status().isNoContent());
     }
 }
 

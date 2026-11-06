@@ -131,6 +131,25 @@ export class App {
     });
   }
 
+  aoJogarQuizExistente(quizId: string): void {
+    this.errorMessage = null;
+    this.viewState = 'loading';
+    this.loadingMessage = 'Carregando o quiz do banco de dados...';
+
+    this.quizService.obterQuizPorId(quizId).subscribe({
+      next: (session) => {
+        this.quizSession = session;
+        this.quizResult = null;
+        this.viewState = 'quiz';
+      },
+      error: (err) => {
+        this.viewState = 'config';
+        const serverMsg = err?.error?.message || err?.message || 'Falha ao carregar o quiz.';
+        this.errorMessage = `Não foi possível carregar o quiz: ${serverMsg}`;
+      }
+    });
+  }
+
   aoSubmeterQuiz(respostasUsuario: Record<string, string>): void {
     if (!this.quizSession) return;
 

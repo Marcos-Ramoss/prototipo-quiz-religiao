@@ -2,6 +2,7 @@ package com.quiz.religiousquiz.modules.quiz.repository;
 
 import com.quiz.religiousquiz.modules.quiz.domain.QuestionEntity;
 import com.quiz.religiousquiz.modules.quiz.domain.QuizSession;
+import com.quiz.religiousquiz.modules.quiz.repository.entity.ParticipacaoJpaEntity;
 import com.quiz.religiousquiz.modules.quiz.repository.entity.PerguntaJpaEntity;
 import com.quiz.religiousquiz.modules.quiz.repository.entity.QuizJpaEntity;
 import com.quiz.religiousquiz.modules.quiz.repository.jpa.ParticipacaoRepository;
@@ -10,10 +11,12 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @Primary
@@ -33,11 +36,13 @@ public class QuizSessionRepositoryImpl implements QuizSessionRepository {
     public QuizSession salvar(QuizSession sessao) {
         QuizJpaEntity entity = new QuizJpaEntity(
                 sessao.getId(),
+                sessao.getTitulo(),
                 sessao.getReligiao(),
                 sessao.getTema(),
                 sessao.getDificuldade(),
                 sessao.getQuestoes() != null ? sessao.getQuestoes().size() : 0,
-                "CRIADO",
+                sessao.getTempoLimiteSegundos(),
+                sessao.getStatus() != null ? sessao.getStatus() : "PUBLICADO",
                 sessao.getCriadoEm(),
                 sessao.getExpiraEm()
         );
@@ -73,11 +78,47 @@ public class QuizSessionRepositoryImpl implements QuizSessionRepository {
         }
 
         QuizJpaEntity entity = opt.get();
-        if (entity.getExpiraEm() != null && entity.getExpiraEm().isBefore(Instant.now())) {
-            quizRepository.deleteById(id);
+        // Quizzes do catálogo institucional (PUBLICADO) são perenes e nunca expiram
+        if (!"PUBLICADO".equalsIgnoreCase(entity.getStatus())
+                && entity.getExpiraEm() != null
+                && entity.getExpiraEm().isBefore(Instant.now())) {
             return Optional.empty();
         }
 
+        return Optional.of(converterParaDominio(entity));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<QuizSession> listarPublicados() {
+        return quizRepository.findByStatusOrderByCriadoEmDesc("PUBLICADO").stream()
+                .map(this::converterParaDominio)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<QuizSession> listarTodos() {
+        return quizRepository.findAllByOrderByCriadoEmDesc().stream()
+                .map(this::converterParaDominio)
+                .toList();
+    }
+
+    @Override
+    public void publicarQuiz(String id, String titulo, int tempoLimiteSegundos) {
+        quizRepository.findById(id).ifPresent(entity -> {
+            if (titulo != null && !titulo.isBlank()) {
+                entity.setTitulo(titulo);
+            }
+            if (tempoLimiteSegundos >= 0) {
+                entity.setTempoLimiteSegundos(tempoLimiteSegundos);
+            }
+            entity.setStatus("PUBLICADO");
+            quizRepository.save(entity);
+        });
+    }
+
+    private QuizSession converterParaDominio(QuizJpaEntity entity) {
         List<QuestionEntity> questoesDominio = new ArrayList<>();
         if (entity.getPerguntas() != null) {
             for (PerguntaJpaEntity p : entity.getPerguntas()) {
@@ -92,16 +133,18 @@ public class QuizSessionRepositoryImpl implements QuizSessionRepository {
                 ));
             }
         }
-
-        return Optional.of(new QuizSession(
+        return new QuizSession(
                 entity.getId(),
+                entity.getTitulo(),
                 entity.getReligiao(),
                 entity.getTema(),
                 entity.getDificuldade(),
+                entity.getStatus(),
+                entity.getTempoLimiteSegundos(),
                 entity.getCriadoEm(),
                 entity.getExpiraEm(),
                 questoesDominio
-        ));
+        );
     }
 
     @Override
@@ -111,7 +154,22 @@ public class QuizSessionRepositoryImpl implements QuizSessionRepository {
 
     @Override
     public void registrarParticipacao() {
-        // Incrementa ou registra participação persistida
+        // Incrementa ou registra participação padrão
+    }
+
+    @Override
+    public void registrarParticipacao(String quizId, int total, int acertos, int erros, double aproveitamento) {
+        ParticipacaoJpaEntity participacao = new ParticipacaoJpaEntity(
+                UUID.randomUUID().toString(),
+                quizId,
+                total,
+                acertos,
+                erros,
+                BigDecimal.valueOf(aproveitamento),
+                null,
+                Instant.now()
+        );
+        participacaoRepository.save(participacao);
     }
 
     @Override

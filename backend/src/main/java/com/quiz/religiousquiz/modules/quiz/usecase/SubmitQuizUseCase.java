@@ -30,8 +30,6 @@ public class SubmitQuizUseCase {
         QuizSession sessao = sessionRepository.buscarPorId(requisicao.quizId())
                 .orElseThrow(() -> new QuizNotFoundException(requisicao.quizId()));
 
-        sessionRepository.registrarParticipacao();
-
         Map<String, String> mapaRespostasUsuario = new java.util.HashMap<>();
         if (requisicao.respostas() != null) {
             for (AnswerSubmissionDto ans : requisicao.respostas()) {
@@ -51,6 +49,8 @@ public class SubmitQuizUseCase {
         double aproveitamento = total > 0
                 ? Math.round(((double) acertos / total) * 10000.0) / 100.0
                 : 0.0;
+
+        sessionRepository.registrarParticipacao(requisicao.quizId(), total, acertos, erros, aproveitamento);
 
         return new QuizResultResponse(total, acertos, erros, aproveitamento, detalhes);
     }

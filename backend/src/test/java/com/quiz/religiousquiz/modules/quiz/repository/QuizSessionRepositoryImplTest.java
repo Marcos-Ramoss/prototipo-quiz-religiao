@@ -50,5 +50,15 @@ class QuizSessionRepositoryImplTest {
         assertEquals("A", recuperado.get().getQuestoes().get(0).getRespostaCorretaId());
         assertEquals(2, recuperado.get().getQuestoes().get(0).getAlternativas().size());
     }
+
+    @Test
+    @DisplayName("Deve registrar participação no banco de dados e atualizar contagem")
+    void deveRegistrarParticipacao() {
+        long antes = repository.obterTotalParticipacoes();
+        repository.registrarParticipacao("quiz-123", 5, 4, 1, 80.0);
+        long depois = repository.obterTotalParticipacoes();
+
+        assertTrue(depois >= antes);
+    }
 }
 

@@ -8,7 +8,9 @@ import {
   SubmitQuizPayload,
   QuizResult,
   QuizStats,
-  ActivityItem
+  ActivityItem,
+  QuizSummary,
+  PublishQuizPayload
 } from '../models/quiz.models';
 
 const STATS_STORAGE_KEY = 'convivere_quiz_stats';
@@ -65,6 +67,55 @@ export class QuizService {
         this.incrementarParticipacoes(resultado);
       })
     );
+  }
+
+  listarPublicados(): Observable<QuizSummary[]> {
+    return this.http.get<QuizSummary[]>(`${this.apiUrl}/publicados`).pipe(
+      catchError(() => of([]))
+    );
+  }
+
+  listarTodosAdmin(): Observable<QuizSummary[]> {
+    return this.http.get<QuizSummary[]>(`${this.apiUrl}/admin/todos`).pipe(
+      catchError(() => of([]))
+    );
+  }
+
+  obterQuizPorId(id: string): Observable<QuizSession> {
+    return this.http.get<QuizSession>(`${this.apiUrl}/${id}`);
+  }
+
+  publicarQuiz(id: string, payload?: PublishQuizPayload): Observable<QuizSummary> {
+    return this.http.put<QuizSummary>(`${this.apiUrl}/${id}/publicar`, payload || {}).pipe(
+      tap(() => this.atualizarEstatisticas())
+    );
+  }
+
+  excluirQuiz(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.atualizarEstatisticas())
+    );
+  }
+
+  // Aliases de conveniência
+  getPublicQuizzes(): Observable<QuizSummary[]> {
+    return this.listarPublicados();
+  }
+
+  getAdminQuizzes(): Observable<QuizSummary[]> {
+    return this.listarTodosAdmin();
+  }
+
+  getQuizById(id: string): Observable<QuizSession> {
+    return this.obterQuizPorId(id);
+  }
+
+  publishQuiz(id: string, payload?: PublishQuizPayload): Observable<QuizSummary> {
+    return this.publicarQuiz(id, payload);
+  }
+
+  deleteQuiz(id: string): Observable<void> {
+    return this.excluirQuiz(id);
   }
 
   // Aliases de conveniência

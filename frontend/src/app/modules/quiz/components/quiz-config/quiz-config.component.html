@@ -1,4 +1,37 @@
 <div class="config-view-container">
+
+  <!-- SELETOR DE PERFIL: ALUNO vs EDUCADOR/ADMIN -->
+  <div class="role-selector-bar">
+    <div class="role-selector-pills">
+      <button type="button" class="role-pill" [class.is-active]="userRole === 'USER'"
+        (click)="alternarPerfil('USER')">
+        <span class="role-icon">🎓</span>
+        <span class="role-label">Visão do Aluno</span>
+        <span class="role-badge">Responder Quizzes</span>
+      </button>
+
+      <button type="button" class="role-pill" [class.is-active]="userRole === 'ADMIN'"
+        (click)="alternarPerfil('ADMIN')">
+        <span class="role-icon">🛠️</span>
+        <span class="role-label">Estúdio do Educador</span>
+        @if (isAdminLoggedIn) {
+        <span class="role-badge role-badge-logged">🔒 Conectado</span>
+        } @else {
+        <span class="role-badge role-badge-admin">Requer Acesso</span>
+        }
+      </button>
+    </div>
+
+    @if (isAdminLoggedIn) {
+    <div class="admin-session-indicator">
+      <span class="session-user-badge">🛡️ {{ adminLoggedName }}</span>
+      <button type="button" class="btn-admin-logout" (click)="deslogarAdmin()" title="Encerrar sessão de Administrador">
+        Sair ⎋
+      </button>
+    </div>
+    }
+  </div>
+
   <!-- 1. Linha Superior de Métricas Dinâmicas (Cards de Estatísticas) -->
   @if (stats$ | async; as stats) {
   <section class="stats-overview-grid" aria-label="Estatísticas da Plataforma">
@@ -59,182 +92,496 @@
   </section>
   }
 
-  <!-- 2. Grid Principal: Formulário de Quiz (Esquerda) + Widgets Informativos (Direita) -->
-  <div class="dashboard-two-cols">
-    <!-- Coluna Esquerda: Card de Criação do Quiz -->
-    <section class="main-create-card">
-      <div class="create-card-header">
-        <div class="target-icon-box">
-          <span class="target-symbol">🎯</span>
-        </div>
-        <div>
-          <h2 class="create-title">Criar um novo quiz</h2>
-          <p class="create-subtitle">Defina o tema, o nível de dificuldade e a quantidade de perguntas.</p>
-        </div>
+  <!-- ======================================================================= -->
+  <!-- MODO 1: VISÃO DO ALUNO / COLABORADOR (USER) -->
+  <!-- ======================================================================= -->
+  @if (userRole === 'USER') {
+  <section class="student-catalog-section">
+    <div class="catalog-header-row">
+      <div>
+        <span class="eyebrow-tag">CATÁLOGO DE DESAFIOS</span>
+        <h2 class="section-heading">Quizzes Disponíveis para Você</h2>
+        <p class="section-subheading">Escolha um dos desafios elaborados pelos educadores e teste seu conhecimento.</p>
       </div>
+      <button type="button" class="btn-refresh" (click)="carregarQuizzesPublicados()" title="Atualizar catálogo">
+        🔄 Atualizar
+      </button>
+    </div>
 
-      <!-- ETAPA 1: SELEÇÃO DA TRADIÇÃO -->
-      <div class="step-container">
-        <div class="step-title-row">
-          <span class="step-circle-badge">1</span>
-          <div class="step-headings">
-            <h3 class="step-name">Selecione uma tradição ou tema</h3>
+    <!-- Filtro de Tradições Mobile-First (Carrossel Horizontal com overflow-x-auto) -->
+    <div class="tradition-filter-carousel scrollbar-hide">
+      <button type="button" class="filter-pill" [class.is-active]="filtroReligiaoAluno === 'TODAS'"
+        (click)="filtroReligiaoAluno = 'TODAS'">
+        Todas as Tradições
+      </button>
+      @for (rel of religions; track rel.id) {
+      <button type="button" class="filter-pill" [class.is-active]="filtroReligiaoAluno === rel.name"
+        (click)="filtroReligiaoAluno = rel.name">
+        <span [style.color]="rel.color">{{ rel.icon }}</span> {{ rel.name }}
+      </button>
+      }
+    </div>
+
+    <!-- Grid de Quizzes Publicados -->
+    @if (isLoadingQuizzes) {
+    <div class="empty-catalog-box">
+      <span class="empty-icon">⏳</span>
+      <h3>Carregando catálogo de quizzes...</h3>
+      <p>Consultando banco de dados no Supabase.</p>
+    </div>
+    } @else if (quizzesFiltradosAluno.length === 0) {
+    <div class="empty-catalog-box">
+      <span class="empty-icon">📖</span>
+      <h3>Nenhum quiz publicado nesta categoria no momento</h3>
+      <p>Alterne para o <strong>Estúdio do Educador</strong> acima para formular e publicar novos quizzes com IA!</p>
+      <button type="button" class="btn-goto-admin" (click)="alternarPerfil('ADMIN')">
+        🛠️ Acessar Estúdio do Educador
+      </button>
+    </div>
+    } @else {
+    <div class="quizzes-grid">
+      @for (quiz of quizzesFiltradosAluno; track quiz.id) {
+      <article class="quiz-card-student">
+        <div class="card-accent-bar" [style.background-color]="obterCorReligiao(quiz.religiao)"></div>
+        <div class="card-body">
+          <div class="card-top-row">
+            <span class="religion-glyph" [style.color]="obterCorReligiao(quiz.religiao)">
+              {{ obterIconeReligiao(quiz.religiao) }}
+            </span>
+            <span class="badge-difficulty" [attr.data-level]="quiz.dificuldade">
+              {{ quiz.dificuldade }}
+            </span>
           </div>
-        </div>
 
-        <div class="religions-cards-grid">
-          @for (rel of religions; track rel.id) {
-          <button type="button" class="tradition-card" [class.is-selected]="religiaoSelecionada === rel.id"
-            (click)="selectReligion(rel.id)">
-            <div class="tradition-symbol-box" [style.color]="rel.color">
-              <span class="trad-symbol">{{ rel.icon }}</span>
-            </div>
-            <div class="tradition-info">
-              <strong class="trad-name">{{ rel.name }}</strong>
-              <span class="trad-desc">{{ rel.desc }}</span>
-            </div>
-            @if (religiaoSelecionada === rel.id) {
-            <div class="trad-selected-badge">✓</div>
-            }
+          <h3 class="quiz-card-title">{{ quiz.titulo }}</h3>
+          <p class="quiz-card-theme">{{ quiz.tema ? quiz.tema : ('Fundamentos de ' + quiz.religiao) }}</p>
+
+          <div class="quiz-card-meta">
+            <span class="meta-item">📝 {{ quiz.totalPerguntas }} questões</span>
+            <span class="meta-item" [class.meta-timer]="quiz.tempoLimiteSegundos > 0">
+              ⏱️ {{ formatarTempo(quiz.tempoLimiteSegundos) }}
+            </span>
+          </div>
+
+          <button type="button" class="btn-start-quiz" (click)="iniciarQuiz(quiz.id)">
+            <span>Iniciar Desafio</span>
+            <span class="arrow-glyph">→</span>
           </button>
-          }
         </div>
-      </div>
+      </article>
+      }
+    </div>
+    }
+  </section>
+  }
 
-      <!-- ETAPA 2: CONFIGURAÇÃO DO DESAFIO -->
-      <div class="step-container">
-        <div class="step-title-row">
-          <span class="step-circle-badge">2</span>
-          <div class="step-headings">
-            <h3 class="step-name">Configure seu desafio</h3>
+  <!-- ======================================================================= -->
+  <!-- MODO 2: ESTÚDIO DO EDUCADOR / ADMINISTRADOR (ADMIN) -->
+  <!-- ======================================================================= -->
+  @if (userRole === 'ADMIN' && isAdminLoggedIn) {
+  <section class="admin-studio-section">
+    <!-- Abas Internas do Admin -->
+    <div class="admin-tabs-nav">
+      <button type="button" class="admin-tab-btn" [class.is-active]="adminTab === 'generator'"
+        (click)="adminTab = 'generator'">
+        ✦ Gerador de Quizzes com IA
+      </button>
+      <button type="button" class="admin-tab-btn" [class.is-active]="adminTab === 'manage'"
+        (click)="adminTab = 'manage'; carregarQuizzesAdmin()">
+        📋 Gerenciar Quizzes Cadastrados ({{ adminQuizzes.length }})
+      </button>
+    </div>
+
+    @if (adminTab === 'generator') {
+    <!-- Grid de Criação: Formulário + Widgets Informativos -->
+    <div class="dashboard-two-cols">
+      <!-- Coluna Esquerda: Card de Criação do Quiz -->
+      <section class="main-create-card">
+        <div class="create-card-header">
+          <div class="target-icon-box">
+            <span class="target-symbol">🎯</span>
+          </div>
+          <div>
+            <h2 class="create-title">Gerar novo quiz com IA</h2>
+            <p class="create-subtitle">Defina a tradição, tema, regras de tempo e publique para os alunos.</p>
           </div>
         </div>
 
-        <div class="config-options-row">
-          <!-- Dificuldade -->
-          <div class="option-field-group">
-            <label class="field-label">Nível de dificuldade</label>
-            <div class="segmented-capsule-control">
-              @for (dif of difficulties; track dif) {
-              <button type="button" class="capsule-btn" [class.active]="dificuldadeSelecionada === dif"
-                (click)="selectDifficulty(dif)">
-                {{ dif }}
-              </button>
-              }
+        <!-- ETAPA 1: SELEÇÃO DA TRADIÇÃO -->
+        <div class="step-container">
+          <div class="step-title-row">
+            <span class="step-circle-badge">1</span>
+            <div class="step-headings">
+              <h3 class="step-name">Selecione uma tradição ou tema</h3>
             </div>
           </div>
 
-          <!-- Quantidade de Questões -->
-          <div class="option-field-group">
-            <label class="field-label">Quantidade de perguntas</label>
-            <div class="segmented-capsule-control">
-              @for (qtd of quantities; track qtd) {
-              <button type="button" class="capsule-btn" [class.active]="quantidadeSelecionada === qtd"
-                (click)="selectQuantity(qtd)">
-                {{ qtd }} questões
-              </button>
+          <div class="religions-cards-grid">
+            @for (rel of religions; track rel.id) {
+            <button type="button" class="tradition-card" [class.is-selected]="religiaoSelecionada === rel.id"
+              (click)="selecionarReligiao(rel.id)">
+              <div class="tradition-symbol-box" [style.color]="rel.color">
+                <span class="trad-symbol">{{ rel.icon }}</span>
+              </div>
+              <div class="tradition-details">
+                <strong class="trad-title">{{ rel.name }}</strong>
+                <span class="trad-desc">{{ rel.desc }}</span>
+              </div>
+              @if (religiaoSelecionada === rel.id) {
+              <div class="selected-badge">✓</div>
               }
-            </div>
-          </div>
-        </div>
-
-        <!-- Tema Específico Opcional -->
-        <div class="theme-field-wrapper">
-          <label class="field-label" for="theme-input">
-            Algum tema específico? <span class="label-optional">(opcional)</span>
-          </label>
-          <div class="theme-input-box">
-            <span class="input-search-icon">🔍</span>
-            <input id="theme-input" type="text" class="theme-text-input" [(ngModel)]="temaInformado"
-              placeholder="Ex: Festas judaicas, história de Israel, parábolas, costumes..."
-              (keyup.enter)="submitConfig()" />
-            @if (temaInformado) {
-            <button type="button" class="clear-input-btn" (click)="temaInformado = ''" title="Limpar tema">✕</button>
-            }
-          </div>
-
-          <!-- Sugestões Rápidas de Tema -->
-          @if (currentSuggestedThemes.length > 0) {
-          <div class="suggested-chips-tray">
-            <span class="chips-caption">Sugestões:</span>
-            @for (theme of currentSuggestedThemes; track theme) {
-            <button type="button" class="theme-chip-pill" [class.selected]="temaInformado === theme"
-              (click)="selectTheme(theme)">
-              {{ theme }}
             </button>
             }
           </div>
-          }
         </div>
 
-        <!-- Barra Inferior de Ações -->
-        <div class="create-card-actions">
-          <button type="button" class="btn-reset-form" (click)="resetForm()" title="Redefinir campos">
-            <span>🔄</span> Limpar
+        <!-- ETAPA 2: CONFIGURAÇÕES PEDAGÓGICAS -->
+        <div class="step-container mt-4">
+          <div class="step-title-row">
+            <span class="step-circle-badge">2</span>
+            <div class="step-headings">
+              <h3 class="step-name">Configure os parâmetros do desafio</h3>
+            </div>
+          </div>
+
+          <div class="substep-params-grid">
+            <div class="substep-col">
+              <label class="param-label">Nível de dificuldade</label>
+              <div class="pill-options-group">
+                @for (dif of difficulties; track dif) {
+                <button type="button" class="pill-btn" [class.is-active]="dificuldadeSelecionada === dif"
+                  (click)="selecionarDificuldade(dif)">
+                  {{ dif }}
+                </button>
+                }
+              </div>
+            </div>
+
+            <div class="substep-col">
+              <label class="param-label">Quantidade de perguntas</label>
+              <div class="pill-options-group">
+                @for (qtd of quantities; track qtd) {
+                <button type="button" class="pill-btn" [class.is-active]="quantidadeSelecionada === qtd"
+                  (click)="selecionarQuantidade(qtd)">
+                  {{ qtd }} questões
+                </button>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Tema Específico com Sugestões Rápidas -->
+          <div class="theme-input-block mt-4">
+            <label class="param-label" for="theme-input">
+              Algum tema específico? <span class="optional-hint">(opcional)</span>
+            </label>
+            <div class="theme-input-wrapper">
+              <span class="search-input-icon">🔍</span>
+              <input id="theme-input" type="text" class="theme-text-field"
+                placeholder="Ex: Festas judaicas, parábolas, costumes..." [(ngModel)]="temaInformado" maxlength="80">
+            </div>
+
+            @if (currentSuggestedThemes.length > 0) {
+            <div class="suggested-chips-row">
+              <span class="suggest-caption">Sugestões para {{ selectedReligionName }}:</span>
+              @for (st of currentSuggestedThemes; track st) {
+              <button type="button" class="suggestion-chip" (click)="selecionarTema(st)">
+                + {{ st }}
+              </button>
+              }
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- ETAPA 3: REGRAS DE TEMPO E PUBLICAÇÃO (ADMIN) -->
+        <div class="step-container mt-4">
+          <div class="step-title-row">
+            <span class="step-circle-badge">3</span>
+            <div class="step-headings">
+              <h3 class="step-name">Regras de tempo e publicação</h3>
+            </div>
+          </div>
+
+          <div class="admin-rules-grid">
+            <div>
+              <label class="param-label" for="quiz-title-input">
+                Título público do Quiz <span class="optional-hint">(opcional)</span>
+              </label>
+              <input id="quiz-title-input" type="text" class="theme-text-field"
+                placeholder="Ex: Grandes Tradições e Valores de Paz" [(ngModel)]="tituloPersonalizado" maxlength="120">
+            </div>
+
+            <div>
+              <label class="param-label">Tempo limite de resolução</label>
+              <div class="pill-options-group">
+                @for (opt of timeLimitOptions; track opt.minutes) {
+                <button type="button" class="pill-btn" [class.is-active]="tempoLimiteMinutos === opt.minutes"
+                  (click)="selecionarTempoLimite(opt.minutes)">
+                  ⏱️ {{ opt.label }}
+                </button>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botões de Ação do Admin -->
+        <div class="create-card-actions mt-4">
+          <button type="button" class="btn-clear-form" (click)="limparFormulario()">
+            🔄 Limpar
           </button>
-
-          <button type="button" class="btn-start-quiz" (click)="submitConfig()">
-            <span>Criar meu quiz</span>
-            <span class="btn-arrow">→</span>
+          <button type="button" class="btn-submit-create" (click)="enviarConfiguracao()">
+            <span>Gerar e Salvar Quiz</span>
+            <span class="arrow-glyph">→</span>
           </button>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Coluna Direita: Widgets Informativos e Atividades -->
-    <aside class="sidebar-widgets-column">
-      <!-- Widget 1: Por que usar o Convivere? -->
-      <div class="info-widget-card promo-card">
-        <div class="widget-header-row">
-          <span class="widget-icon">💡</span>
-          <h3 class="widget-title">Por que usar o Convivere?</h3>
+      <!-- Coluna Direita: Widgets Informativos -->
+      <aside class="dashboard-sidebar-widgets">
+        <div class="widget-card widget-benefits">
+          <div class="widget-header">
+            <span class="widget-icon">💡</span>
+            <h3 class="widget-title">Por que usar o Convivere?</h3>
+          </div>
+          <ul class="benefits-checklist">
+            <li class="benefit-item">
+              <span class="check-circle">✓</span>
+              <span>Aprendizagem interativa e acessível</span>
+            </li>
+            <li class="benefit-item">
+              <span class="check-circle">✓</span>
+              <span>Conteúdo confiável e educativo</span>
+            </li>
+            <li class="benefit-item">
+              <span class="check-circle">✓</span>
+              <span>Valorização da diversidade religiosa</span>
+            </li>
+            <li class="benefit-item">
+              <span class="check-circle">✓</span>
+              <span>Estimulo ao diálogo e ao respeito</span>
+            </li>
+          </ul>
         </div>
-        <ul class="convivere-reasons-list">
-          <li class="reason-item">
-            <span class="check-circle-icon">✓</span>
-            <span class="reason-text">Aprendizagem interativa e acessível</span>
-          </li>
-          <li class="reason-item">
-            <span class="check-circle-icon">✓</span>
-            <span class="reason-text">Conteúdo confiável e educativo</span>
-          </li>
-          <li class="reason-item">
-            <span class="check-circle-icon">✓</span>
-            <span class="reason-text">Valorização da diversidade religiosa</span>
-          </li>
-          <li class="reason-item">
-            <span class="check-circle-icon">✓</span>
-            <span class="reason-text">Estímulo ao diálogo e ao respeito</span>
-          </li>
-        </ul>
-      </div>
 
-      <!-- Widget 2: Últimas Atividades Dinâmicas -->
-      <div class="info-widget-card activities-card">
-        <div class="widget-header-row justify-between">
-          <div class="widget-title-group">
+        <!-- Widget: Últimas Atividades Dinâmicas -->
+        <div class="widget-card widget-activities">
+          <div class="widget-header">
             <span class="widget-icon">📊</span>
             <h3 class="widget-title">Últimas atividades</h3>
           </div>
-          <span class="widget-link-all">Atualizado</span>
-        </div>
-
-        <div class="activities-stream-list">
           @if (activities$ | async; as activities) {
-          @for (act of activities; track act.id) {
-          <div class="activity-feed-item">
-            <div class="activity-icon-circle" [ngClass]="act.iconBgClass">
-              {{ act.icon }}
+          <div class="activities-feed">
+            @for (act of activities; track act.id) {
+            <div class="activity-feed-row">
+              <div class="activity-glyph-box" [ngClass]="act.iconBgClass">
+                {{ act.icon }}
+              </div>
+              <div class="activity-texts">
+                <strong class="activity-entry-title">{{ act.title }}</strong>
+                <span class="activity-entry-subtitle">{{ act.subtitle }}</span>
+                <span class="activity-entry-time">{{ act.timeAgo }}</span>
+              </div>
             </div>
-            <div class="activity-details">
-              <strong class="activity-headline">{{ act.title }}</strong>
-              <span class="activity-time-caption">{{ act.timeAgo }}</span>
-            </div>
+            }
           </div>
           }
-          }
+        </div>
+      </aside>
+    </div>
+    }
+
+    <!-- Tab 2: Gerenciar Quizzes Cadastrados -->
+    @if (adminTab === 'manage') {
+    <div class="admin-manage-card">
+      <div class="manage-header-row">
+        <div>
+          <h2 class="section-heading">Todos os Quizzes Cadastrados</h2>
+          <p class="section-subheading">Acompanhe rascunhos, quizzes publicados e gerencie o catálogo da turma.</p>
+        </div>
+        <button type="button" class="btn-refresh" (click)="carregarQuizzesAdmin()">
+          🔄 Atualizar Lista
+        </button>
+      </div>
+
+      @if (isLoadingQuizzes) {
+      <div class="empty-catalog-box">
+        <span class="empty-icon">⏳</span>
+        <h3>Carregando lista de quizzes...</h3>
+      </div>
+      } @else if (adminQuizzes.length === 0) {
+      <div class="empty-catalog-box">
+        <span class="empty-icon">📂</span>
+        <h3>Nenhum quiz cadastrado ainda</h3>
+        <p>Utilize a aba <strong>"Gerador com IA"</strong> para formular seu primeiro quiz!</p>
+      </div>
+      } @else {
+      <div class="admin-quizzes-table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Tradição</th>
+              <th>Título / Tema</th>
+              <th>Dificuldade</th>
+              <th>Perguntas</th>
+              <th>Tempo</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (q of adminQuizzes; track q.id) {
+            <tr>
+              <td>
+                <span class="table-tradition-tag" [style.color]="obterCorReligiao(q.religiao)">
+                  {{ obterIconeReligiao(q.religiao) }} {{ q.religiao }}
+                </span>
+              </td>
+              <td>
+                <strong>{{ q.titulo }}</strong>
+                @if (q.tema) {
+                <br><span class="table-subtext">{{ q.tema }}</span>
+                }
+              </td>
+              <td>
+                <span class="badge-difficulty" [attr.data-level]="q.dificuldade">{{ q.dificuldade }}</span>
+              </td>
+              <td>{{ q.totalPerguntas }} questões</td>
+              <td>{{ formatarTempo(q.tempoLimiteSegundos) }}</td>
+              <td>
+                <span class="table-status-pill" [class.is-published]="q.status === 'PUBLICADO'">
+                  {{ q.status }}
+                </span>
+              </td>
+              <td>
+                <div class="table-actions-cell">
+                  @if (q.status !== 'PUBLICADO') {
+                  <button type="button" class="btn-table-action btn-publish" (click)="publicarQuizRascunho(q)"
+                    title="Publicar para alunos">
+                    Publicar
+                  </button>
+                  }
+                  <button type="button" class="btn-table-action btn-test" (click)="iniciarQuiz(q.id)"
+                    title="Testar como aluno">
+                    Testar
+                  </button>
+                  <button type="button" class="btn-table-action btn-delete" (click)="excluirQuiz(q.id)"
+                    title="Excluir quiz">
+                    Excluir
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+    </div>
+    }
+  </section>
+  }
+
+  <!-- ======================================================================= -->
+  <!-- TELA DE LOGIN SPLIT-SCREEN (ESTILO ALVARÃES MODERNA) -->
+  <!-- ======================================================================= -->
+  @if (userRole === 'ADMIN' && !isAdminLoggedIn) {
+  <div class="split-login-fullscreen">
+    <!-- Painel Esquerdo: Identidade Visual Noble Green com Grid (Alvarães Moderna) -->
+    <div class="split-left-hero">
+      <div class="split-left-content">
+        <div class="split-top-tag">
+          <span class="tag-globe-icon">✧</span>
+          <span>ESTÚDIO PEDAGÓGICO</span>
+        </div>
+
+        <div class="split-brand-block">
+          <h1 class="split-brand-title">
+            Convivere <span class="split-brand-accent">Diálogo</span>
+          </h1>
+          <p class="split-brand-desc">
+            O estúdio pedagógico oficial do projeto Convivere. Formule quizzes educativos com Inteligência Artificial, gerencie o catálogo de tradições, defina tempos e acompanhe o engajamento dos alunos em um só lugar.
+          </p>
+        </div>
+
+        <div class="split-left-footer">
+          <span>© 2026 Convivere · Conhecer · Respeitar · Dialogar. Todos os direitos reservados.</span>
         </div>
       </div>
-    </aside>
+    </div>
+
+    <!-- Painel Direito: Formulário Limpo de Acesso Restrito -->
+    <div class="split-right-form">
+      <div class="split-form-container">
+        <!-- Logo Badge Centralizado -->
+        <div class="split-logo-box">
+          <div class="split-logo-sparkle">✧</div>
+        </div>
+
+        <h2 class="split-login-title">Acesso Restrito</h2>
+        <p class="split-login-subtitle">Insira suas credenciais para acessar o painel de controle.</p>
+
+        @if (loginErrorMessage) {
+        <div class="split-error-alert">
+          <span class="alert-icon">⚠️</span>
+          <span>{{ loginErrorMessage }}</span>
+        </div>
+        }
+
+        <form class="split-form" (ngSubmit)="executarLoginAdmin()">
+          <div class="split-form-group">
+            <label class="split-label" for="login-email">E-mail corporativo</label>
+            <input id="login-email" type="email" class="split-input" name="adminEmail"
+              [(ngModel)]="adminLoginEmail" placeholder="admin@convivere.org" required autofocus>
+          </div>
+
+          <div class="split-form-group">
+            <label class="split-label" for="login-pass">Senha</label>
+            <div class="split-password-wrapper">
+              <input id="login-pass" [type]="showPassword ? 'text' : 'password'" class="split-input" name="adminPass"
+                [(ngModel)]="adminLoginPassword" placeholder="••••••••••••" required>
+              <button type="button" class="btn-toggle-eye" (click)="alternarVisibilidadeSenha()" [title]="showPassword ? 'Ocultar senha' : 'Ver senha'">
+                @if (showPassword) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="eye-svg">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="eye-svg">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+
+          <div class="split-remember-row">
+            <label class="split-checkbox-label">
+              <input type="checkbox" [(ngModel)]="lembrarDispositivo" name="rememberDevice" class="split-checkbox">
+              <span>Lembrar neste dispositivo</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-split-submit">
+            <span>Entrar no painel</span>
+            <span class="arrow-glyph">→</span>
+          </button>
+
+          <div class="split-demo-hint">
+            <span class="hint-icon">💡</span>
+            <span><strong>Dica para teste:</strong> <code>admin@convivere.org</code> / <code>admin123</code></span>
+          </div>
+
+          <div class="split-back-row">
+            <button type="button" class="btn-back-link" (click)="voltarParaAluno()">
+              ← Voltar ao Catálogo (Visão do Aluno)
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
+  }
 </div>

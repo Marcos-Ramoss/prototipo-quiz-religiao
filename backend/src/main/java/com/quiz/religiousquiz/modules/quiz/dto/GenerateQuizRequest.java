@@ -19,6 +19,18 @@ public record GenerateQuizRequest(
 
         @Schema(description = "Quantidade de perguntas a serem geradas", example = "5")
         @NotNull(message = "A quantidade de perguntas deve ser informada")
-        Integer quantidade
-) {}
+        Integer quantidade,
 
+        @Schema(description = "Título personalizado do quiz (opcional)", example = "Parábolas e Ensinamentos")
+        String titulo,
+
+        @Schema(description = "Tempo limite em segundos para realização (opcional, 0 = ilimitado)", example = "600")
+        Integer tempoLimiteSegundos,
+
+        @Schema(description = "Status inicial do quiz (RASCUNHO ou PUBLICADO)", example = "PUBLICADO")
+        String status
+) {
+    public GenerateQuizRequest(String religiao, String tema, String dificuldade, Integer quantidade) {
+        this(religiao, tema, dificuldade, quantidade, null, 0, "PUBLICADO");
+    }
+}
