@@ -54,10 +54,10 @@ class GenerateQuizUseCaseTest {
                 ), "A", "Jesus nasceu em Belém de Judá.", "Evangelho de Mateus 2:1", "Fácil")
         );
 
-        when(aiQuestionGenerator.generateQuestions(eq("Cristianismo"), eq("Parábolas"), eq("Fácil"), eq(5)))
+        when(aiQuestionGenerator.gerarQuestoes(eq("Cristianismo"), eq("Parábolas"), eq("Fácil"), eq(5)))
                 .thenReturn(mockQuestions);
 
-        QuizSessionResponse response = generateQuizUseCase.execute(request);
+        QuizSessionResponse response = generateQuizUseCase.executar(request);
 
         assertNotNull(response);
         assertNotNull(response.quizId());
@@ -66,7 +66,7 @@ class GenerateQuizUseCaseTest {
         assertEquals("q1", response.questoes().get(0).id());
 
         ArgumentCaptor<QuizSession> sessionCaptor = ArgumentCaptor.forClass(QuizSession.class);
-        verify(sessionRepository).save(sessionCaptor.capture());
+        verify(sessionRepository).salvar(sessionCaptor.capture());
         QuizSession savedSession = sessionCaptor.getValue();
         assertEquals("A", savedSession.getQuestoes().get(0).getRespostaCorretaId());
     }

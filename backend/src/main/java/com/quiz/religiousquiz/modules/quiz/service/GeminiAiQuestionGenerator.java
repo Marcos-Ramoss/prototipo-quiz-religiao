@@ -61,7 +61,7 @@ public class GeminiAiQuestionGenerator implements AiQuestionGenerator {
     }
 
     @Override
-    public List<QuestionEntity> generateQuestions(String religiao, String tema, String dificuldade, int quantidade) {
+    public List<QuestionEntity> gerarQuestoes(String religiao, String tema, String dificuldade, int quantidade) {
         if (apiKey.isBlank()) {
             log.warn("GEMINI_API_KEY não configurada. Usando gerador de contingência para demonstração.");
             return generateFallbackQuestions(religiao, tema, dificuldade, quantidade);
@@ -89,6 +89,10 @@ public class GeminiAiQuestionGenerator implements AiQuestionGenerator {
         log.warn("Google Gemini temporariamente indisponível. Ativando catálogo verificado de {} ({}) com {} questões.",
                 religiao, tema, quantidade);
         return generateFallbackQuestions(religiao, tema, dificuldade, quantidade);
+    }
+
+    public List<QuestionEntity> generateQuestions(String religiao, String tema, String dificuldade, int quantidade) {
+        return gerarQuestoes(religiao, tema, dificuldade, quantidade);
     }
 
     private String executeWithRetry(String targetModel, Map<String, Object> requestPayload) {

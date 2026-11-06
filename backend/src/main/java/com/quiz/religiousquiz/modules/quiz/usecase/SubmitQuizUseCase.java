@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class SubmitQuizUseCase {
@@ -25,23 +24,25 @@ public class SubmitQuizUseCase {
         this.sessionRepository = sessionRepository;
     }
 
-    public QuizResultResponse execute(SubmitQuizRequest request) {
-        validateRequest(request);
+    public QuizResultResponse executar(SubmitQuizRequest requisicao) {
+        validarRequisicao(requisicao);
 
-        QuizSession session = sessionRepository.findById(request.quizId())
-                .orElseThrow(() -> new QuizNotFoundException(request.quizId()));
+        QuizSession sessao = sessionRepository.buscarPorId(requisicao.quizId())
+                .orElseThrow(() -> new QuizNotFoundException(requisicao.quizId()));
 
-        Map<String, String> userAnswersMap = new java.util.HashMap<>();
-        if (request.respostas() != null) {
-            for (AnswerSubmissionDto ans : request.respostas()) {
+        sessionRepository.registrarParticipacao();
+
+        Map<String, String> mapaRespostasUsuario = new java.util.HashMap<>();
+        if (requisicao.respostas() != null) {
+            for (AnswerSubmissionDto ans : requisicao.respostas()) {
                 if (ans != null && ans.perguntaId() != null) {
-                    userAnswersMap.put(ans.perguntaId(), ans.respostaSelecionadaId() != null ? ans.respostaSelecionadaId() : "");
+                    mapaRespostasUsuario.put(ans.perguntaId(), ans.respostaSelecionadaId() != null ? ans.respostaSelecionadaId() : "");
                 }
             }
         }
 
-        List<QuestionResultDto> detalhes = session.getQuestoes().stream()
-                .map(question -> evaluateQuestion(question, userAnswersMap))
+        List<QuestionResultDto> detalhes = sessao.getQuestoes().stream()
+                .map(questao -> avaliarQuestao(questao, mapaRespostasUsuario))
                 .toList();
 
         int total = detalhes.size();
@@ -54,34 +55,37 @@ public class SubmitQuizUseCase {
         return new QuizResultResponse(total, acertos, erros, aproveitamento, detalhes);
     }
 
-    private void validateRequest(SubmitQuizRequest request) {
-        if (request.quizId() == null || request.quizId().isBlank()) {
+    public QuizResultResponse execute(SubmitQuizRequest requisicao) {
+        return executar(requisicao);
+    }
+
+    private void validarRequisicao(SubmitQuizRequest requisicao) {
+        if (requisicao.quizId() == null || requisicao.quizId().isBlank()) {
             throw new InvalidQuizParametersException("O identificador do quiz é obrigatório.");
         }
-        if (request.respostas() == null || request.respostas().isEmpty()) {
+        if (requisicao.respostas() == null || requisicao.respostas().isEmpty()) {
             throw new InvalidQuizParametersException("A lista de respostas não pode ser vazia.");
         }
     }
 
-    private QuestionResultDto evaluateQuestion(QuestionEntity question, Map<String, String> userAnswersMap) {
-        String respostaSelecionada = userAnswersMap.getOrDefault(question.getId(), "");
-        boolean acertou = question.getRespostaCorretaId() != null
-                && question.getRespostaCorretaId().trim().equalsIgnoreCase(respostaSelecionada.trim());
+    private QuestionResultDto avaliarQuestao(QuestionEntity questao, Map<String, String> mapaRespostasUsuario) {
+        String respostaSelecionada = mapaRespostasUsuario.getOrDefault(questao.getId(), "");
+        boolean acertou = questao.getRespostaCorretaId() != null
+                && questao.getRespostaCorretaId().trim().equalsIgnoreCase(respostaSelecionada.trim());
 
-        List<AlternativeDto> alternativas = question.getAlternativas().stream()
+        List<AlternativeDto> alternativas = questao.getAlternativas().stream()
                 .map(alt -> new AlternativeDto(alt.getId(), alt.getTexto()))
                 .toList();
 
         return new QuestionResultDto(
-                question.getId(),
-                question.getPergunta(),
+                questao.getId(),
+                questao.getPergunta(),
                 alternativas,
                 respostaSelecionada,
-                question.getRespostaCorretaId(),
+                questao.getRespostaCorretaId(),
                 acertou,
-                question.getExplicacao(),
-                question.getReferencia()
+                questao.getExplicacao(),
+                questao.getReferencia()
         );
     }
 }
-

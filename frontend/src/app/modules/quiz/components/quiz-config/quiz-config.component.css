@@ -1,386 +1,670 @@
-.config-card {
-  background: var(--surface);
-  border: 1px solid #edf0f7;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 4px 18px rgba(21, 16, 66, 0.03);
-  padding: 1.15rem 1.45rem;
+/* Container Global da Configuração */
+.config-view-container {
   display: flex;
   flex-direction: column;
-  gap: 0.95rem;
+  gap: 22px;
 }
 
-@media (max-width: 640px) {
-  .config-card {
-    padding: 0.9rem;
-    gap: 0.85rem;
-  }
-}
-
-.section-block {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.section-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
-.step-pill {
-  width: 22px;
-  height: 22px;
-  background: #f3f2ff;
-  color: var(--primary);
-  border-radius: var(--radius-xs);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 800;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.section-title {
-  font-size: 0.975rem;
-  font-weight: 800;
-  color: var(--text-navy);
-  letter-spacing: -0.015em;
-  line-height: 1.15;
-}
-
-.section-subtitle {
-  font-size: 0.725rem;
-  color: var(--text-muted);
-  margin-top: 1px;
-}
-
-/* 4-Column Grid on Desktop */
-.religion-grid {
+/* ============================================================
+   1. GRID DE MÉTRICAS DINÂMICAS SUPERIOR (4 CARDS)
+   ============================================================ */
+.stats-overview-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.55rem;
+  gap: 16px;
 }
 
-@media (max-width: 900px) {
-  .religion-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .religion-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.religion-card {
-  background: #ffffff;
-  border: 1px solid #e8ecf4;
-  border-radius: var(--radius-sm);
-  padding: 0.6rem 0.75rem;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  cursor: pointer;
-  transition: var(--transition);
-  min-height: auto;
-}
-
-.religion-card:hover {
-  border-color: #c7c1ff;
-  box-shadow: 0 2px 10px rgba(79, 57, 246, 0.08);
-  transform: translateY(-1px);
-}
-
-.religion-card.selected {
-  border: 2px solid var(--primary);
-  background: #faf9ff;
-  box-shadow: 0 2px 10px rgba(79, 57, 246, 0.1);
-}
-
-.card-icon-box {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  background: #f5f4ff;
-  color: var(--primary);
+.stat-metric-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px 18px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin-bottom: 0.35rem;
+  gap: 14px;
+  box-shadow: 0 4px 16px rgba(18, 55, 50, 0.035);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.religion-card.selected .card-icon-box {
-  background: #edeaff;
+.stat-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(18, 55, 50, 0.06);
+  border-color: #bce6d7;
 }
 
-.check-badge {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
-  background: var(--primary);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.625rem;
-  font-weight: 800;
-  box-shadow: 0 1px 3px rgba(79, 57, 246, 0.3);
+.stat-icon-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
 }
 
-.card-text {
+.metric-svg {
+  width: 22px;
+  height: 22px;
+}
+
+.badge-mint {
+  background: #e9f7f1;
+  color: #168c73;
+}
+
+.badge-blue {
+  background: #e8f2fc;
+  color: #2072bf;
+}
+
+.badge-amber {
+  background: #fef5ea;
+  color: #d97706;
+}
+
+.badge-purple {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.badge-teal {
+  background: #e0f2f1;
+  color: #00897b;
+}
+
+.badge-green {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.stat-metric-info {
   display: flex;
   flex-direction: column;
   gap: 1px;
 }
 
-.rel-title {
-  font-size: 0.825rem;
-  font-weight: 700;
-  color: var(--text-navy);
+.stat-metric-number {
+  font-size: 23px;
+  font-weight: 850;
+  color: var(--ink);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
 }
 
-.rel-desc {
-  font-size: 0.665rem;
-  color: var(--text-muted);
-  line-height: 1.25;
+.stat-metric-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
 }
 
-/* Controls Grid */
-.controls-grid {
+/* ============================================================
+   2. LAYOUT DUAS COLUNAS (FORMULÁRIO + WIDGETS)
+   ============================================================ */
+.dashboard-two-cols {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.85rem;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 22px;
+  align-items: start;
 }
 
-@media (max-width: 640px) {
-  .controls-grid {
-    grid-template-columns: 1fr;
-    gap: 0.65rem;
-  }
-}
-
-.control-box {
+/* Card Principal de Criação (Coluna Esquerda) */
+.main-create-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 26px 28px;
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 24px;
 }
 
-.control-label {
-  font-size: 0.775rem;
-  font-weight: 700;
-  color: var(--text-navy);
-}
-
-.optional-text {
-  font-weight: 400;
-  color: var(--text-light);
-  font-size: 0.7rem;
-}
-
-.capsule-group {
+.create-card-header {
   display: flex;
-  background: var(--surface-muted);
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.target-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: #e9f7f1;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.create-title {
+  font-size: 20px;
+  font-weight: 850;
+  color: var(--ink);
+  letter-spacing: -0.6px;
+}
+
+.create-subtitle {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Container de Etapas (Step 1 e Step 2) */
+.step-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.step-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-circle-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.step-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.2px;
+}
+
+/* Grid de Tradições (8 Cards) */
+.religions-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.tradition-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 13px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tradition-card:hover {
+  border-color: #a4ddca;
+  background: #f7faf9;
+  transform: translateY(-1px);
+}
+
+.tradition-card.is-selected {
+  border: 2px solid var(--green);
+  background: #f3faf7;
+  box-shadow: 0 4px 14px rgba(22, 140, 115, 0.12);
+}
+
+.tradition-symbol-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f4f7f6;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.tradition-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.trad-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trad-desc {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.trad-selected-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+/* Configuração do Desafio (Dificuldade e Quantidade) */
+.config-options-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.option-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 12.5px;
+  font-weight: 750;
+  color: var(--ink);
+}
+
+.label-optional {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.segmented-capsule-control {
+  display: flex;
+  background: #f1f5f3;
+  border: 1px solid var(--line);
+  border-radius: 12px;
   padding: 3px;
-  border-radius: var(--radius-sm);
-  gap: 3px;
+  gap: 2px;
 }
 
 .capsule-btn {
   flex: 1;
-  border: none;
+  border: 0;
   background: transparent;
-  padding: 0.35rem 0.5rem;
-  border-radius: 6px;
-  font-size: 0.785rem;
-  font-weight: 500;
-  color: #596579;
+  padding: 8px 10px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #5d7576;
   cursor: pointer;
   transition: var(--transition);
+  text-align: center;
 }
 
 .capsule-btn:hover {
-  color: var(--text-navy);
+  color: var(--deep);
 }
 
 .capsule-btn.active {
-  background: #ffffff;
-  color: var(--primary);
-  font-weight: 700;
-  box-shadow: 0 1px 3px rgba(21, 16, 66, 0.08);
-  border: 1px solid #edf0f7;
+  background: var(--deep);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(11, 48, 52, 0.2);
 }
 
-/* Subject Box */
-.subject-box {
+/* Campo de Tema com Ícone de Busca */
+.theme-field-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  margin-top: 0.15rem;
+  gap: 7px;
+  margin-top: 4px;
 }
 
-.input-wrapper {
-  position: relative;
+.theme-input-box {
   display: flex;
   align-items: center;
-}
-
-.subject-input {
-  background: #ffffff;
-  border: 1px solid #e8ecf4;
-  border-radius: var(--radius-sm);
-  padding: 0.55rem 0.85rem;
-  font-size: 0.8rem;
-  color: var(--text-navy);
-  width: 100%;
-  outline: none;
+  gap: 10px;
+  background: #fbfcfc;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 9px 14px;
   transition: var(--transition);
 }
 
-.subject-input::placeholder {
-  color: #a0aec0;
+.theme-input-box:focus-within {
+  border-color: #8fe0c7;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(117, 214, 188, 0.2);
 }
 
-.subject-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(79, 57, 246, 0.1);
+.input-search-icon {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.theme-text-input {
+  border: 0;
+  background: transparent;
+  font-size: 13.5px;
+  color: var(--ink);
+  width: 100%;
+  outline: none;
 }
 
 .clear-input-btn {
-  position: absolute;
-  right: 10px;
-  background: #f1f3f9;
-  border: none;
-  color: #64748b;
-  width: 18px;
-  height: 18px;
+  border: 0;
+  background: #eaf1ee;
+  color: var(--muted);
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
+  font-size: 10px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+/* Sugestões de Tema */
+.suggested-chips-tray {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 0.625rem;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.chips-caption {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.theme-chip-pill {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: #3b5756;
+  font-size: 11px;
+  font-weight: 650;
+  padding: 4px 9px;
+  border-radius: 100px;
   cursor: pointer;
-}
-
-.clear-input-btn:hover {
-  background: #e2e8f0;
-  color: var(--text-navy);
-}
-
-/* Popular Themes */
-.popular-themes-area {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin-top: 0.1rem;
-}
-
-.popular-themes-label {
-  font-size: 0.685rem;
-  font-weight: 600;
-  color: #8793a6;
-}
-
-.popular-tags-list {
-  display: flex;
-  gap: 0.35rem;
-  padding-bottom: 2px;
-}
-
-.tag-pill {
-  background: #f8f9fd;
-  border: 1px solid #e6e9f2;
-  color: #4b5568;
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-full);
-  font-size: 0.7rem;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
   transition: var(--transition);
 }
 
-.tag-pill:hover {
-  background: #f3f2ff;
-  color: var(--primary);
-  border-color: #c7c1ff;
+.theme-chip-pill:hover {
+  background: #edf8f3;
+  border-color: #a4ddca;
+  color: var(--deep);
 }
 
-.tag-pill.active {
-  background: #f3f2ff;
-  color: var(--primary);
-  border-color: var(--primary);
-  font-weight: 700;
+.theme-chip-pill.selected {
+  background: var(--deep);
+  color: #ffffff;
+  border-color: var(--deep);
 }
 
-/* Bottom Action Bar */
-.bottom-action-bar {
+/* Barra de Ações Inferior */
+.create-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  margin-top: 6px;
+}
+
+.btn-reset-form {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: #4b6665;
+  padding: 10px 18px;
+  border-radius: 11px;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-reset-form:hover {
+  background: #f1f6f4;
+  color: var(--deep);
+}
+
+.btn-start-quiz {
+  border: 0;
+  background: var(--deep);
+  color: #ffffff;
+  padding: 11px 22px;
+  border-radius: 11px;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(11, 48, 52, 0.25);
+}
+
+.btn-start-quiz:hover {
+  background: #0f4045;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(11, 48, 52, 0.35);
+}
+
+.btn-arrow {
+  font-size: 15px;
+  transition: transform 0.2s ease;
+}
+
+.btn-start-quiz:hover .btn-arrow {
+  transform: translateX(3px);
+}
+
+/* ============================================================
+   3. COLUNA DIREITA: WIDGETS INFORMATIVOS
+   ============================================================ */
+.sidebar-widgets-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.info-widget-card {
+  border-radius: 18px;
+  padding: 20px;
+}
+
+/* Widget Promocional "Por que usar o Convivere?" */
+.promo-card {
+  background: linear-gradient(135deg, #edf8f4 0%, #f6fbf9 100%);
+  border: 1px solid #d5ede2;
+}
+
+.widget-header-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  border-top: 1px solid #edf0f7;
-  padding-top: 0.75rem;
-  margin-top: 0.15rem;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
 }
 
-@media (max-width: 640px) {
-  .bottom-action-bar {
-    flex-direction: column;
-    align-items: stretch;
+.widget-header-row.justify-between {
+  justify-content: space-between;
+}
+
+.widget-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.widget-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.widget-title {
+  font-size: 15px;
+  font-weight: 850;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+}
+
+.widget-link-all {
+  font-size: 11.5px;
+  font-weight: 750;
+  color: var(--green);
+}
+
+.convivere-reasons-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.reason-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.check-circle-icon {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.reason-text {
+  font-size: 12.5px;
+  font-weight: 650;
+  color: #1e4541;
+  line-height: 1.35;
+}
+
+/* Widget de Atividades Recentes */
+.activities-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 18px rgba(18, 55, 50, 0.035);
+}
+
+.activities-stream-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.activity-feed-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid #f2f6f4;
+}
+
+.activity-feed-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.activity-icon-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.activity-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.activity-headline {
+  font-size: 12.5px;
+  font-weight: 750;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.activity-time-caption {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ============================================================
+   RESPONSIVIDADE
+   ============================================================ */
+@media (max-width: 1080px) {
+  .dashboard-two-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-overview-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .religions-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.summary-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
+@media (max-width: 640px) {
+  .main-create-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
 
-.summary-question {
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: var(--text-navy);
-}
+  .stats-overview-grid {
+    grid-template-columns: 1fr;
+  }
 
-.summary-details {
-  font-size: 0.725rem;
-  color: var(--text-muted);
-}
+  .religions-cards-grid {
+    grid-template-columns: 1fr;
+  }
 
-.start-quiz-btn {
-  background: linear-gradient(135deg, #4f39f6 0%, #6350f7 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 0.65rem 1.6rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(79, 57, 246, 0.3);
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-}
+  .config-options-row {
+    grid-template-columns: 1fr;
+  }
 
-.start-quiz-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(79, 57, 246, 0.4);
-}
+  .create-card-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
 
-.start-quiz-btn:active {
-  transform: translateY(0);
+  .btn-reset-form,
+  .btn-start-quiz {
+    width: 100%;
+    justify-content: center;
+  }
 }

@@ -7,8 +7,10 @@ import com.quiz.religiousquiz.modules.quiz.dto.GenerateQuizRequest;
 import com.quiz.religiousquiz.modules.quiz.dto.PublicQuestionDto;
 import com.quiz.religiousquiz.modules.quiz.dto.QuizResultResponse;
 import com.quiz.religiousquiz.modules.quiz.dto.QuizSessionResponse;
+import com.quiz.religiousquiz.modules.quiz.dto.QuizStatsResponse;
 import com.quiz.religiousquiz.modules.quiz.dto.SubmitQuizRequest;
 import com.quiz.religiousquiz.modules.quiz.usecase.GenerateQuizUseCase;
+import com.quiz.religiousquiz.modules.quiz.usecase.GetQuizStatsUseCase;
 import com.quiz.religiousquiz.modules.quiz.usecase.SubmitQuizUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,6 +44,22 @@ class QuizControllerTest {
     @MockBean
     private SubmitQuizUseCase submitQuizUseCase;
 
+    @MockBean
+    private GetQuizStatsUseCase getQuizStatsUseCase;
+
+    @Test
+    @DisplayName("GET /api/quiz/stats deve retornar 200 com QuizStatsResponse")
+    void deveRetornarEstatisticasComSucesso() throws Exception {
+        when(getQuizStatsUseCase.executar()).thenReturn(new QuizStatsResponse(12, 3842, 8, 5280));
+
+        mockMvc.perform(get("/api/quiz/stats"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quizzesCriados").value(12))
+                .andExpect(jsonPath("$.perguntasDisponiveis").value(3842))
+                .andExpect(jsonPath("$.tradicoesCadastradas").value(8))
+                .andExpect(jsonPath("$.participacoesRealizadas").value(5280));
+    }
+
     @Test
     @DisplayName("POST /api/quiz/generate deve retornar 201 com QuizSessionResponse")
     void deveGerarQuizComSucesso() throws Exception {
@@ -58,7 +77,7 @@ class QuizControllerTest {
                 ))
         );
 
-        when(generateQuizUseCase.execute(any(GenerateQuizRequest.class))).thenReturn(response);
+        when(generateQuizUseCase.executar(any(GenerateQuizRequest.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/quiz/generate")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +100,7 @@ class QuizControllerTest {
                 1, 1, 0, 100.0, List.of()
         );
 
-        when(submitQuizUseCase.execute(any(SubmitQuizRequest.class))).thenReturn(response);
+        when(submitQuizUseCase.executar(any(SubmitQuizRequest.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/quiz/submit")
                         .contentType(MediaType.APPLICATION_JSON)

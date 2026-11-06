@@ -20,7 +20,7 @@ export class QuizRunnerComponent implements OnDestroy {
   private currentUtterance: SpeechSynthesisUtterance | null = null;
 
   ngOnDestroy(): void {
-    this.stopSpeech();
+    this.pararNarracaoVoz();
   }
 
   get totalQuestions(): number {
@@ -42,24 +42,24 @@ export class QuizRunnerComponent implements OnDestroy {
     return Math.round(((this.currentQuestionIndex + 1) / this.totalQuestions) * 100);
   }
 
-  selectAlternative(altId: string): void {
+  selecionarAlternativa(altId: string): void {
     if (!this.currentQuestion) return;
     this.userAnswers[this.currentQuestion.id] = altId;
   }
 
-  isAlternativeSelected(altId: string): boolean {
+  estaAlternativaSelecionada(altId: string): boolean {
     if (!this.currentQuestion) return false;
     return this.userAnswers[this.currentQuestion.id] === altId;
   }
 
-  toggleSpeechNarration(): void {
+  alternarNarracaoVoz(): void {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       alert('Seu navegador não possui suporte nativo à síntese de voz.');
       return;
     }
 
     if (this.isSpeaking) {
-      this.stopSpeech();
+      this.pararNarracaoVoz();
       return;
     }
 
@@ -72,7 +72,7 @@ export class QuizRunnerComponent implements OnDestroy {
 
     const fullScript = `Questão número ${this.currentQuestionIndex + 1}. ${q.pergunta}. ${altsText}`;
 
-    this.stopSpeech();
+    this.pararNarracaoVoz();
 
     const utterance = new SpeechSynthesisUtterance(fullScript);
     utterance.lang = 'pt-BR';
@@ -101,7 +101,7 @@ export class QuizRunnerComponent implements OnDestroy {
     window.speechSynthesis.speak(utterance);
   }
 
-  stopSpeech(): void {
+  pararNarracaoVoz(): void {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
@@ -109,31 +109,41 @@ export class QuizRunnerComponent implements OnDestroy {
     this.currentUtterance = null;
   }
 
-  nextQuestion(): void {
-    this.stopSpeech();
+  proximaQuestao(): void {
+    this.pararNarracaoVoz();
     if (this.currentQuestionIndex < this.totalQuestions - 1) {
       this.currentQuestionIndex++;
     } else {
-      this.finish();
+      this.finalizar();
     }
   }
 
-  previousQuestion(): void {
-    this.stopSpeech();
+  questaoAnterior(): void {
+    this.pararNarracaoVoz();
     if (this.currentQuestionIndex > 0) {
       this.currentQuestionIndex--;
     }
   }
 
-  goToQuestion(index: number): void {
-    this.stopSpeech();
+  irParaQuestao(index: number): void {
+    this.pararNarracaoVoz();
     if (index >= 0 && index < this.totalQuestions) {
       this.currentQuestionIndex = index;
     }
   }
 
-  finish(): void {
-    this.stopSpeech();
+  finalizar(): void {
+    this.pararNarracaoVoz();
     this.submitQuiz.emit(this.userAnswers);
   }
+
+  // Aliases semânticos para templates
+  selectAlternative = (id: string) => this.selecionarAlternativa(id);
+  isAlternativeSelected = (id: string) => this.estaAlternativaSelecionada(id);
+  toggleSpeechNarration = () => this.alternarNarracaoVoz();
+  stopSpeech = () => this.pararNarracaoVoz();
+  nextQuestion = () => this.proximaQuestao();
+  previousQuestion = () => this.questaoAnterior();
+  goToQuestion = (i: number) => this.irParaQuestao(i);
+  finish = () => this.finalizar();
 }

@@ -1,8 +1,8 @@
 .skeleton-card {
-  background: var(--surface);
-  border: 1px solid #edf0f7;
-  border-radius: var(--radius-xl);
-  box-shadow: 0 4px 24px rgba(21, 16, 66, 0.04);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg, 19px);
+  box-shadow: var(--shadow);
   padding: 2.5rem;
   display: flex;
   flex-direction: column;
@@ -12,7 +12,7 @@
 @media (max-width: 640px) {
   .skeleton-card {
     padding: 1.5rem;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md, 14px);
   }
 }
 
@@ -28,31 +28,31 @@
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4f39f6 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #0b3438 0%, #168c73 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  box-shadow: 0 8px 24px rgba(79, 57, 246, 0.35);
+  color: #78e6bf;
+  box-shadow: 0 8px 24px rgba(22, 140, 115, 0.3);
   margin-bottom: 0.25rem;
 }
 
 .orb-star-icon {
   width: 28px;
   height: 28px;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6));
+  filter: drop-shadow(0 0 6px rgba(120, 230, 191, 0.6));
 }
 
 .skeleton-title {
   font-size: 1.35rem;
   font-weight: 800;
-  color: var(--text-navy);
+  color: var(--ink);
   letter-spacing: -0.02em;
 }
 
 .skeleton-subtitle {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: var(--muted);
   max-width: 480px;
 }
 
@@ -62,7 +62,7 @@
   flex-direction: column;
   gap: 1.25rem;
   padding-top: 1rem;
-  border-top: 1px solid #edf0f7;
+  border-top: 1px solid var(--line);
 }
 
 .skeleton-top-row {
@@ -74,25 +74,25 @@
 .skel-tag {
   width: 80px;
   height: 26px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-full, 100px);
 }
 
 .skel-progress {
   width: 110px;
   height: 24px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-full, 100px);
 }
 
 .skel-bar {
   width: 100%;
   height: 6px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-full, 100px);
 }
 
 .skel-question {
   width: 85%;
   height: 38px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-sm, 10px);
 }
 
 .skeleton-options-group {
@@ -104,7 +104,7 @@
 .skel-option {
   width: 100%;
   height: 52px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md, 14px);
 }
 
 .skeleton-bottom-row {
@@ -116,5 +116,5 @@
 .skel-nav-btn {
   width: 110px;
   height: 42px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-sm, 10px);
 }

@@ -2,8 +2,9 @@
   <!-- Cabeçalho Exclusivo para Impressão em PDF / Papel -->
   <div class="print-header">
     <div class="print-header-content">
-      <h1 class="print-doc-title">QUIZ DAS RELIGIÕES — SIMULADO EDUCATIVO & GABARITO</h1>
-      <p class="print-doc-subtitle">Relatório Oficial de Avaliação e Aprendizado Gerado por Inteligência Artificial</p>
+      <div class="print-brand-badge">CONVIVERE ✧ DIÁLOGO INTER-RELIGIOSO</div>
+      <h1 class="print-doc-title">SIMULADO EDUCATIVO & GABARITO COMENTADO</h1>
+      <p class="print-doc-subtitle">Relatório Oficial de Avaliação e Formação Intercultural · Plataforma Convivere</p>
       
       <div class="print-meta-grid">
         <div class="print-meta-item">
@@ -18,7 +19,7 @@
       </div>
 
       <div class="print-student-line">
-        <strong>Nome do Aluno / Participante:</strong> ___________________________________________________________
+        <strong>Nome do Participante / Aluno:</strong> ___________________________________________________________
       </div>
     </div>
   </div>
@@ -69,7 +70,8 @@
       type="button"
       class="action-btn btn-retry"
       (click)="retry.emit()">
-      🔄 Tentar Novamente
+      <span>🔄</span>
+      <span>Tentar Novamente</span>
     </button>
     <button
       type="button"
@@ -81,22 +83,24 @@
         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
         <rect x="6" y="14" width="12" height="8"></rect>
       </svg>
-      <span>📄 Exportar Simulado / Gabarito em PDF</span>
+      <span>Exportar Simulado / Gabarito em PDF</span>
     </button>
     <button
       type="button"
       class="action-btn btn-new-quiz"
       (click)="restart.emit()">
-      ⚙️ Configurar Novo Quiz
+      <span>⚙️</span>
+      <span>Configurar Novo Quiz</span>
     </button>
   </div>
 
   <!-- Gabarito e Explicações Detalhadas -->
   <div class="review-section">
     <div class="review-header">
+      <span class="review-eyebrow">GABARITO E ANÁLISE PEDAGÓGICA</span>
       <h3 class="review-title">Revisão Detalhada com Explicações</h3>
       <p class="review-subtitle">
-        Confira o gabarito oficial, a análise educativa e as referências históricas verificadas.
+        Confira o gabarito oficial, a análise educativa e as referências históricas verificadas pela curadoria pedagógica.
       </p>
     </div>
 

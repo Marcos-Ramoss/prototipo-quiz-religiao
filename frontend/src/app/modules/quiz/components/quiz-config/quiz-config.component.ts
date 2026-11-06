@@ -1,7 +1,9 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GenerateQuizPayload, ReligionOption } from '../../models/quiz.models';
+import { GenerateQuizPayload, ReligionOption, QuizStats, ActivityItem } from '../../models/quiz.models';
+import { QuizService } from '../../services/quiz.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-quiz-config',
@@ -11,22 +13,27 @@ import { GenerateQuizPayload, ReligionOption } from '../../models/quiz.models';
   styleUrl: './quiz-config.component.css'
 })
 export class QuizConfigComponent {
+  private readonly quizService = inject(QuizService);
+
   @Output() generate = new EventEmitter<GenerateQuizPayload>();
 
+  readonly stats$: Observable<QuizStats> = this.quizService.stats$;
+  readonly activities$: Observable<ActivityItem[]> = this.quizService.activities$;
+
   religiaoSelecionada: string = 'Judaísmo';
-  dificuldadeSelecionada: string = 'Médio';
+  dificuldadeSelecionada: string = 'Fácil';
   quantidadeSelecionada: number = 10;
   temaInformado: string = '';
 
   readonly religions: ReligionOption[] = [
-    { id: 'Cristianismo', name: 'Cristianismo', icon: '✝', desc: 'Evangelhos, história e tradições' },
-    { id: 'Islamismo', name: 'Islamismo', icon: '☪', desc: 'Alcorão, história e práticas' },
-    { id: 'Budismo', name: 'Budismo', icon: '☸', desc: 'Ensinamentos e filosofia' },
-    { id: 'Hinduísmo', name: 'Hinduísmo', icon: 'ॐ', desc: 'Textos, filosofias e práticas' },
-    { id: 'Judaísmo', name: 'Judaísmo', icon: '✡', desc: 'Torá, costumes e história' },
-    { id: 'Espiritismo', name: 'Espiritismo', icon: '✦', desc: 'Obras, filosofia e ensinamentos' },
-    { id: 'Religiões de matriz africana', name: 'Matriz africana', icon: '🌿', desc: 'Ancestralidade e diversidade' },
-    { id: 'Outras tradições', name: 'Outras tradições', icon: '✺', desc: 'Crenças e filosofias do mundo' }
+    { id: 'Cristianismo', name: 'Cristianismo', icon: '✝', desc: 'Evangelhos, história e tradições', color: '#376F8E', category: 'Abraâmica' },
+    { id: 'Islamismo', name: 'Islamismo', icon: '☪', desc: 'Alcorão, história e práticas', color: '#238A83', category: 'Abraâmica' },
+    { id: 'Budismo', name: 'Budismo', icon: '☸', desc: 'Ensinamentos e filosofia', color: '#BE8650', category: 'Dhármica' },
+    { id: 'Hinduísmo', name: 'Hinduísmo', icon: 'ॐ', desc: 'Textos, filosofias e práticas', color: '#C77561', category: 'Dhármica' },
+    { id: 'Judaísmo', name: 'Judaísmo', icon: '✡', desc: 'Torá, costumes e história', color: '#667CB4', category: 'Abraâmica' },
+    { id: 'Espiritismo', name: 'Espiritismo', icon: '✦', desc: 'Obras, filosofia e ensinamentos', color: '#4B8F80', category: 'Filosófica' },
+    { id: 'Religiões de matriz africana', name: 'Matriz Africana', icon: '❋', desc: 'Ancestralidade e diversidade', color: '#A16B52', category: 'Tradicionais' },
+    { id: 'Outras tradições', name: 'Outras tradições', icon: '☬', desc: 'Sikhismo e tradições do mundo', color: '#A17A2F', category: 'Outras' }
   ];
 
   readonly difficulties: string[] = ['Fácil', 'Médio', 'Difícil'];
@@ -52,27 +59,30 @@ export class QuizConfigComponent {
     return found ? found.name : this.religiaoSelecionada;
   }
 
-  selectReligion(id: string): void {
+  selecionarReligiao(id: string): void {
     this.religiaoSelecionada = id;
   }
 
-  selectDifficulty(dif: string): void {
+  selecionarDificuldade(dif: string): void {
     this.dificuldadeSelecionada = dif;
   }
 
-  selectQuantity(qtd: number): void {
+  selecionarQuantidade(qtd: number): void {
     this.quantidadeSelecionada = qtd;
   }
 
-  selectTheme(theme: string): void {
-    this.temaInformado = theme;
+  selecionarTema(tema: string): void {
+    this.temaInformado = tema;
   }
 
-  clearTheme(): void {
+  limparFormulario(): void {
+    this.religiaoSelecionada = 'Judaísmo';
+    this.dificuldadeSelecionada = 'Fácil';
+    this.quantidadeSelecionada = 10;
     this.temaInformado = '';
   }
 
-  submitConfig(): void {
+  enviarConfiguracao(): void {
     this.generate.emit({
       religiao: this.religiaoSelecionada,
       tema: this.temaInformado.trim() ? this.temaInformado.trim() : undefined,
@@ -80,4 +90,12 @@ export class QuizConfigComponent {
       quantidade: this.quantidadeSelecionada
     });
   }
+
+  // Aliases semânticos para compatibilidade
+  selectReligion = (id: string) => this.selecionarReligiao(id);
+  selectDifficulty = (d: string) => this.selecionarDificuldade(d);
+  selectQuantity = (q: number) => this.selecionarQuantidade(q);
+  selectTheme = (t: string) => this.selecionarTema(t);
+  resetForm = () => this.limparFormulario();
+  submitConfig = () => this.enviarConfiguracao();
 }
