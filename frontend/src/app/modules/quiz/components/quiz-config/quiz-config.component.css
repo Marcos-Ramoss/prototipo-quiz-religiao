@@ -533,6 +533,28 @@
   color: var(--white);
 }
 
+.btn-table-action.btn-pdf-gabarito {
+  color: #167b62;
+  border-color: #bce6d7;
+  background: #f0faf5;
+}
+
+.btn-table-action.btn-pdf-gabarito:hover {
+  background: #167b62;
+  color: var(--white);
+}
+
+.btn-table-action.btn-pdf-simulado {
+  color: #ad5d28;
+  border-color: #f6d8be;
+  background: #fdf6ed;
+}
+
+.btn-table-action.btn-pdf-simulado:hover {
+  background: #ad5d28;
+  color: var(--white);
+}
+
 .btn-table-action.btn-delete {
   color: #c5221f;
   border-color: #f7cecc;

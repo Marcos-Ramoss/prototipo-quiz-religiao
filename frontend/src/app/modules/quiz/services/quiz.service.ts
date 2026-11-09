@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, catchError, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import {
   GenerateQuizPayload,
@@ -94,6 +94,29 @@ export class QuizService {
   excluirQuiz(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       tap(() => this.atualizarEstatisticas())
+    );
+  }
+
+  exportarPdf(id: string, incluirGabarito: boolean = true): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/pdf`, {
+      params: { incluirGabarito: String(incluirGabarito) },
+      responseType: 'blob'
+    });
+  }
+
+  baixarPdf(id: string, incluirGabarito: boolean = true, nomeArquivo?: string): Observable<void> {
+    return this.exportarPdf(id, incluirGabarito).pipe(
+      tap(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = nomeArquivo || `${incluirGabarito ? 'gabarito' : 'simulado'}-${id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }),
+      map(() => void 0)
     );
   }
 

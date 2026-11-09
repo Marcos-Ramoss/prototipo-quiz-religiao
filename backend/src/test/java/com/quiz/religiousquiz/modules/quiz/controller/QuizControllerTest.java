@@ -62,6 +62,9 @@ class QuizControllerTest {
     @MockBean
     private com.quiz.religiousquiz.modules.quiz.usecase.ExcluirQuizUseCase excluirQuizUseCase;
 
+    @MockBean
+    private com.quiz.religiousquiz.modules.quiz.usecase.ExportarQuizPdfUseCase exportarQuizPdfUseCase;
+
     @Test
     @DisplayName("GET /api/quiz/stats deve retornar 200 com QuizStatsResponse")
     void deveRetornarEstatisticasComSucesso() throws Exception {
@@ -162,6 +165,24 @@ class QuizControllerTest {
     void deveExcluirQuizComSucesso() throws Exception {
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/quiz/q-1"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("GET /api/quiz/{id}/pdf deve retornar 200 com application/pdf")
+    void deveExportarPdfComSucesso() throws Exception {
+        byte[] pdfFake = "%PDF-1.4 mock".getBytes();
+        var resultado = new com.quiz.religiousquiz.modules.quiz.usecase.ExportarQuizPdfUseCase.ResultadoExportacaoPdf(
+                pdfFake, "simulado-judaismo.pdf"
+        );
+        when(exportarQuizPdfUseCase.executar("q-1", true)).thenReturn(resultado);
+
+        mockMvc.perform(get("/api/quiz/q-1/pdf?incluirGabarito=true"))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.header().string(
+                        org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"simulado-judaismo.pdf\""))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content().contentType(
+                        org.springframework.http.MediaType.APPLICATION_PDF))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content().bytes(pdfFake));
     }
 }
 

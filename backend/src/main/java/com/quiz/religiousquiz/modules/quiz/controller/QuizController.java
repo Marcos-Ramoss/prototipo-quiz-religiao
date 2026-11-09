@@ -8,6 +8,7 @@ import com.quiz.religiousquiz.modules.quiz.dto.QuizStatsResponse;
 import com.quiz.religiousquiz.modules.quiz.dto.QuizSummaryResponse;
 import com.quiz.religiousquiz.modules.quiz.dto.SubmitQuizRequest;
 import com.quiz.religiousquiz.modules.quiz.usecase.ExcluirQuizUseCase;
+import com.quiz.religiousquiz.modules.quiz.usecase.ExportarQuizPdfUseCase;
 import com.quiz.religiousquiz.modules.quiz.usecase.GenerateQuizUseCase;
 import com.quiz.religiousquiz.modules.quiz.usecase.GetQuizStatsUseCase;
 import com.quiz.religiousquiz.modules.quiz.usecase.ListarQuizzesAdminUseCase;
@@ -20,7 +21,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -46,6 +50,7 @@ public class QuizController {
     private final PublicarQuizUseCase publicarQuizUseCase;
     private final ObterQuizPorIdUseCase obterQuizPorIdUseCase;
     private final ExcluirQuizUseCase excluirQuizUseCase;
+    private final ExportarQuizPdfUseCase exportarQuizPdfUseCase;
 
     public QuizController(GenerateQuizUseCase generateQuizUseCase,
                           SubmitQuizUseCase submitQuizUseCase,
@@ -54,7 +59,8 @@ public class QuizController {
                           ListarQuizzesAdminUseCase listarQuizzesAdminUseCase,
                           PublicarQuizUseCase publicarQuizUseCase,
                           ObterQuizPorIdUseCase obterQuizPorIdUseCase,
-                          ExcluirQuizUseCase excluirQuizUseCase) {
+                          ExcluirQuizUseCase excluirQuizUseCase,
+                          ExportarQuizPdfUseCase exportarQuizPdfUseCase) {
         this.generateQuizUseCase = generateQuizUseCase;
         this.submitQuizUseCase = submitQuizUseCase;
         this.getQuizStatsUseCase = getQuizStatsUseCase;
@@ -63,6 +69,7 @@ public class QuizController {
         this.publicarQuizUseCase = publicarQuizUseCase;
         this.obterQuizPorIdUseCase = obterQuizPorIdUseCase;
         this.excluirQuizUseCase = excluirQuizUseCase;
+        this.exportarQuizPdfUseCase = exportarQuizPdfUseCase;
     }
 
     @GetMapping("/stats")
@@ -98,6 +105,24 @@ public class QuizController {
     })
     public ResponseEntity<QuizSessionResponse> obterPorId(@PathVariable String id) {
         return ResponseEntity.ok(obterQuizPorIdUseCase.executar(id));
+    }
+
+    @GetMapping(value = "/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    @Operation(summary = "Exporta o simulado ou gabarito comentado oficial em PDF",
+               description = "Gera um documento PDF padronizado com cabeçalho institucional, questões formatadas e gabarito comentado opcional.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "PDF gerado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Quiz não encontrado")
+    })
+    public ResponseEntity<byte[]> exportarPdf(
+            @PathVariable String id,
+            @RequestParam(name = "incluirGabarito", defaultValue = "true") boolean incluirGabarito) {
+        var resultado = exportarQuizPdfUseCase.executar(id, incluirGabarito);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resultado.nomeArquivo() + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(resultado.dados());
     }
 
     @PostMapping("/generate")
