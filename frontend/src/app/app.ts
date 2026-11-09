@@ -37,6 +37,7 @@ export class App {
   lastConfigPayload: GenerateQuizPayload | null = null;
   quizSession: QuizSession | null = null;
   quizResult: QuizResult | null = null;
+  currentQuizId: string | null = null;
 
   isDrawerOpen: boolean = false;
   isSidebarCollapsed: boolean = false;
@@ -120,6 +121,7 @@ export class App {
     this.quizService.gerarQuiz(payload).subscribe({
       next: (session) => {
         this.quizSession = session;
+        this.currentQuizId = session.quizId;
         this.quizResult = null;
         this.viewState = 'quiz';
       },
@@ -139,6 +141,7 @@ export class App {
     this.quizService.obterQuizPorId(quizId).subscribe({
       next: (session) => {
         this.quizSession = session;
+        this.currentQuizId = session.quizId;
         this.quizResult = null;
         this.viewState = 'quiz';
       },

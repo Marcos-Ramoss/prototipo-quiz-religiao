@@ -275,6 +275,14 @@ export class QuizConfigComponent implements OnInit {
     return `${min} min`;
   }
 
+  baixarPdfQuiz(id: string, incluirGabarito: boolean = true): void {
+    this.quizService.baixarPdf(id, incluirGabarito).subscribe({
+      error: (err) => {
+        alert('Erro ao solicitar o PDF do backend: ' + (err?.message || 'Falha de conexão.'));
+      }
+    });
+  }
+
   // Aliases semânticos para compatibilidade
   selectReligion = (id: string) => this.selecionarReligiao(id);
   selectDifficulty = (d: string) => this.selecionarDificuldade(d);

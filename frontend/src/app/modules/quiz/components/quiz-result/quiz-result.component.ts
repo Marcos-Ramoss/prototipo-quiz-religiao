@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { QuizResult } from '../../models/quiz.models';
+import { QuizService } from '../../services/quiz.service';
 import confetti from 'canvas-confetti';
 
 export interface MedalInfo {
@@ -20,8 +21,16 @@ export interface MedalInfo {
 })
 export class QuizResultComponent implements OnInit {
   @Input({ required: true }) result!: QuizResult;
+  @Input() quizId: string | null = null;
   @Output() restart = new EventEmitter<void>();
   @Output() retry = new EventEmitter<void>();
+
+  private readonly quizService = inject(QuizService);
+
+  isExportingGabaritoPdf: boolean = false;
+  isExportingSimuladoPdf: boolean = false;
+  pdfExportSuccessMessage: string | null = null;
+  pdfExportErrorMessage: string | null = null;
 
   currentDate: string = new Date().toLocaleDateString('pt-BR');
 
@@ -61,10 +70,38 @@ export class QuizResultComponent implements OnInit {
     }
   }
 
-  exportarParaPdf(): void {
-    if (typeof window !== 'undefined') {
-      window.print();
+  exportarParaPdf(incluirGabarito: boolean = true): void {
+    if (!this.quizId) {
+      this.pdfExportErrorMessage = 'Identificador do quiz não disponível para gerar o PDF.';
+      return;
     }
+
+    if (incluirGabarito) {
+      this.isExportingGabaritoPdf = true;
+    } else {
+      this.isExportingSimuladoPdf = true;
+    }
+    this.pdfExportErrorMessage = null;
+    this.pdfExportSuccessMessage = null;
+
+    this.quizService.baixarPdf(this.quizId, incluirGabarito).subscribe({
+      next: () => {
+        this.isExportingGabaritoPdf = false;
+        this.isExportingSimuladoPdf = false;
+        this.pdfExportSuccessMessage = incluirGabarito 
+          ? 'Gabarito oficial em PDF baixado com sucesso!' 
+          : 'Simulado para impressão baixado com sucesso!';
+        setTimeout(() => {
+          this.pdfExportSuccessMessage = null;
+        }, 4000);
+      },
+      error: (err) => {
+        this.isExportingGabaritoPdf = false;
+        this.isExportingSimuladoPdf = false;
+        this.pdfExportErrorMessage = 'Erro ao gerar o PDF no backend. Tente novamente.';
+        console.error('Erro ao baixar PDF:', err);
+      }
+    });
   }
 
   obterFeedbackPontuacao(aproveitamento: number): { title: string; message: string; badgeClass: string } {

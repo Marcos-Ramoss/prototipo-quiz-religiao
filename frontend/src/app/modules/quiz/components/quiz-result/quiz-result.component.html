@@ -76,23 +76,59 @@
     <button
       type="button"
       class="action-btn btn-export-pdf"
-      (click)="exportToPdf()"
-      title="Gerar PDF ou Imprimir Simulado Educativo">
-      <svg class="pdf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M6 9V2h12v7"></path>
-        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-        <rect x="6" y="14" width="12" height="8"></rect>
-      </svg>
-      <span>Exportar Simulado / Gabarito em PDF</span>
+      (click)="exportarParaPdf(true)"
+      [disabled]="isExportingGabaritoPdf"
+      title="Baixar Gabarito Oficial com Respostas e Explicações em PDF gerado pelo Backend">
+      @if (isExportingGabaritoPdf) {
+        <span>⏳ Gerando...</span>
+      } @else {
+        <svg class="pdf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span>📄 Gabarito em PDF</span>
+      }
+    </button>
+    <button
+      type="button"
+      class="action-btn btn-export-simulado"
+      (click)="exportarParaPdf(false)"
+      [disabled]="isExportingSimuladoPdf"
+      title="Baixar Simulado Escolar em Branco para Sala de Aula">
+      @if (isExportingSimuladoPdf) {
+        <span>⏳ Gerando...</span>
+      } @else {
+        <svg class="pdf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9V2h12v7"></path>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        <span>📝 Simulado em Branco</span>
+      }
     </button>
     <button
       type="button"
       class="action-btn btn-new-quiz"
       (click)="restart.emit()">
       <span>⚙️</span>
-      <span>Configurar Novo Quiz</span>
+      <span>Novo Desafio</span>
     </button>
   </div>
+
+  @if (pdfExportSuccessMessage) {
+  <div class="pdf-feedback-alert feedback-success no-print">
+    <span>✓</span>
+    <span>{{ pdfExportSuccessMessage }}</span>
+  </div>
+  }
+  @if (pdfExportErrorMessage) {
+  <div class="pdf-feedback-alert feedback-error no-print">
+    <span>⚠️</span>
+    <span>{{ pdfExportErrorMessage }}</span>
+  </div>
+  }
 
   <!-- Gabarito e Explicações Detalhadas -->
   <div class="review-section">

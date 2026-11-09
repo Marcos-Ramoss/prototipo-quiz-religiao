@@ -466,6 +466,14 @@
                     title="Testar como aluno">
                     Testar
                   </button>
+                  <button type="button" class="btn-table-action btn-pdf-gabarito" (click)="baixarPdfQuiz(q.id, true)"
+                    title="Baixar Gabarito Oficial em PDF gerado pelo backend">
+                    📄 Gabarito
+                  </button>
+                  <button type="button" class="btn-table-action btn-pdf-simulado" (click)="baixarPdfQuiz(q.id, false)"
+                    title="Baixar Simulado para Impressão em PDF">
+                    📝 Simulado
+                  </button>
                   <button type="button" class="btn-table-action btn-delete" (click)="excluirQuiz(q.id)"
                     title="Excluir quiz">
                     Excluir

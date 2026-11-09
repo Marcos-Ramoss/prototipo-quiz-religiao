@@ -125,7 +125,7 @@
 
       <!-- TELA 4: RESULTADO DO QUIZ -->
       @if (viewState === 'result' && quizResult) {
-      <app-quiz-result [result]="quizResult" (restart)="onRestartConfig()" (retry)="onRetrySameConfig()">
+      <app-quiz-result [result]="quizResult" [quizId]="currentQuizId" (restart)="onRestartConfig()" (retry)="onRetrySameConfig()">
       </app-quiz-result>
       }
 
